@@ -1,4 +1,5 @@
 import { AlertTriangle, Home } from "lucide-react";
+import Link from "next/link";
 
 export default function NotFound() {
   return (
@@ -11,13 +12,13 @@ export default function NotFound() {
         <p className="text-sm text-zinc-500 dark:text-zinc-500">
           The page you are looking for has been moved or does not exist.
         </p>
-        <a
+        <Link
           href="/"
           className="inline-flex items-center justify-center text-sm font-medium text-zinc-600 transition-colors hover:underline dark:text-zinc-400"
         >
           <Home className="mr-2 h-4 w-4" />
           Go back to Home
-        </a>
+        </Link>
       </div>
     </div>
   );
