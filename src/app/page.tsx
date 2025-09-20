@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { Sparkles } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 
 export default function Home() {
   return (
     <div className="flex flex-col items-center pt-32">
       <div className="w-full max-w-2xl space-y-6 text-center">
-        <Sparkles className="mx-auto h-16 w-16 text-green-600 dark:text-zinc-600" />
+        <CheckCircle2 className="mx-auto h-16 w-16 text-green-600 dark:text-zinc-600" />
         <h1 className="text-5xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50 sm:text-6xl">
           Build Better Habits.
         </h1>

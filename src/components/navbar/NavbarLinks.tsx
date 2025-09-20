@@ -27,8 +27,8 @@ export default function NavbarLinks() {
   const pathname = usePathname();
 
   return (
-    <NavigationMenu className="md:flex space-x-8">
-      <NavigationMenuList>
+    <NavigationMenu>
+      <NavigationMenuList className="flex justify-center space-x-8">
         {links.map((link) => {
           const isActive = pathname === link.path;
           return (
