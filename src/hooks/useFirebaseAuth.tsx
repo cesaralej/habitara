@@ -1,3 +1,5 @@
+"use client";
+
 // useFirebaseAuth.js (new file)
 import { useState } from "react";
 import { signInWithPopup } from "firebase/auth";

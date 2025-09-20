@@ -33,13 +33,12 @@ export default function NavbarLinks() {
           const isActive = pathname === link.path;
           return (
             <NavigationMenuItem key={link.path}>
-              <Link href={link.path} legacyBehavior passHref>
-                <NavigationMenuLink
-                  className={navigationMenuTriggerStyle()}
-                  data-state={isActive ? "active" : undefined}
-                >
-                  {link.label}
-                </NavigationMenuLink>
+              <Link
+                href={link.path}
+                className={navigationMenuTriggerStyle()}
+                data-state={isActive ? "active" : undefined}
+              >
+                {link.label}
               </Link>
             </NavigationMenuItem>
           );

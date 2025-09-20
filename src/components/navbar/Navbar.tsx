@@ -1,3 +1,4 @@
+"use client";
 import Brand from "./Brand";
 import NavbarLinks from "./NavbarLinks";
 import UserMenu from "./UserMenu";

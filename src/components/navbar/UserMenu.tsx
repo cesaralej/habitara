@@ -1,18 +1,38 @@
+import { useState } from "react";
 import Link from "next/link";
+import { useAuth } from "@/contexts/auth";
 import { LogIn, User } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface UserMenuProps {
   isLoggedIn: boolean;
 }
 
 export default function UserMenu({ isLoggedIn }: UserMenuProps) {
-  if (isLoggedIn) {
-    // If the user is signed in, display a user icon and a "Log Out" button.
+  const { user, signOutUser } = useAuth();
+  const [imageLoadError, setImageLoadError] = useState(false);
+
+  if (user) {
     return (
       <div className="flex items-center space-x-2">
-        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-zinc-200 dark:bg-zinc-700">
-          <User className="h-5 w-5 text-zinc-600 dark:text-zinc-400" />
-        </div>
+        {user.photoURL && !imageLoadError ? (
+          <img
+            src={user.photoURL}
+            alt="User Profile"
+            className="h-9 w-9 rounded-full"
+            onError={() => setImageLoadError(true)}
+          />
+        ) : (
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-zinc-200 dark:bg-zinc-700">
+            <User className="h-5 w-5 text-zinc-600 dark:text-zinc-400" />
+          </div>
+        )}
+        <Button
+          className="bg-red-500 text-white shadow hover:bg-red-600"
+          onClick={signOutUser}
+        >
+          Log Out
+        </Button>
       </div>
     );
   } else {
