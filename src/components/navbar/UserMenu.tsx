@@ -51,13 +51,15 @@ export default function UserMenu({ isLoggedIn }: UserMenuProps) {
   } else {
     return (
       <div className="flex items-center space-x-4">
-        <Link
-          href="/auth"
-          className="inline-flex items-center justify-center gap-2 rounded-full border border-zinc-300 bg-white px-5 py-2 text-sm font-medium text-zinc-900 shadow-sm transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50 dark:hover:bg-zinc-700"
+        <Button
+          asChild
+          className="bg-green-600 hover:bg-green-700 text-white shadow"
         >
-          <LogIn className="h-4 w-4" />
-          <span>Sign In</span>
-        </Link>
+          <Link href="/auth" className="flex items-center gap-2">
+            <LogIn className="h-4 w-4" />
+            <span>Sign In</span>
+          </Link>
+        </Button>
       </div>
     );
   }

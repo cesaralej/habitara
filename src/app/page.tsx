@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { CheckCircle2 } from "lucide-react";
 
 export default function Home() {
@@ -13,12 +14,19 @@ export default function Home() {
           Habitara is a minimalist habit tracker designed to help you stay
           consistent, track your progress, and build routines that last.
         </p>
-        <div className="pt-4">
-          <Link
-            href="/dashboard"
-            className="inline-flex items-center justify-center rounded-full border border-zinc-300 bg-white px-8 py-3 text-base font-medium text-zinc-900 shadow-sm transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50 dark:hover:bg-zinc-700"
+        <div className="flex flex-col items-center gap-3 pt-6 sm:flex-row sm:justify-center">
+          <Button
+            asChild
+            size="lg"
+            className="bg-green-600 hover:bg-green-700 text-white shadow-lg"
           >
-            <span>Get Started</span>
+            <Link href="/dashboard">Get Started</Link>
+          </Button>
+          <Link
+            href="/about"
+            className="text-sm font-medium text-zinc-600 hover:underline dark:text-zinc-400"
+          >
+            Learn more about Habitara
           </Link>
         </div>
       </div>
