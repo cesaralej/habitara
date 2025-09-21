@@ -41,7 +41,7 @@ export default function RootLayout({
         <Providers>
           <Navbar />
 
-          <main className="flex-grow bg-gray-100 p-4">
+          <main className="flex-grow bg-gradient-to-b from-zinc-50 to-zinc-100 dark:from-zinc-950 dark:to-zinc-900 p-4">
             {children}
             {/* {children} */}
           </main>
