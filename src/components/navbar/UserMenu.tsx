@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/contexts/auth";
 import { LogIn, User } from "lucide-react";
@@ -11,6 +12,18 @@ interface UserMenuProps {
 export default function UserMenu({ isLoggedIn }: UserMenuProps) {
   const { user, signOutUser } = useAuth();
   const [imageLoadError, setImageLoadError] = useState(false);
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await signOutUser();
+      // Redirect to the homepage after successful sign-out
+      router.push("/");
+    } catch (error) {
+      // You could add an alert or a toast here if sign out fails
+      console.error("Logout failed:", error);
+    }
+  };
 
   if (user) {
     return (
@@ -29,7 +42,7 @@ export default function UserMenu({ isLoggedIn }: UserMenuProps) {
         )}
         <Button
           className="bg-red-500 text-white shadow hover:bg-red-600"
-          onClick={signOutUser}
+          onClick={handleLogout}
         >
           Log Out
         </Button>

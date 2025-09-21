@@ -1,7 +1,9 @@
 "use client";
 
+import { useEffect } from "react";
 import { TriangleAlert } from "lucide-react";
 import { useFirebaseAuth } from "@/hooks/useFirebaseAuth";
+import { useRouter } from "next/navigation";
 
 const Alert = ({
   message,
@@ -22,7 +24,15 @@ const Alert = ({
 );
 
 export default function AuthPage() {
-  const { isLoading, error, handleGoogleLogin, clearError } = useFirebaseAuth();
+  const router = useRouter();
+  const { user, isLoading, error, handleGoogleLogin, clearError } =
+    useFirebaseAuth();
+
+  useEffect(() => {
+    if (user) {
+      router.push("/dashboard");
+    }
+  }, [user, router]);
 
   return (
     <div className="flex items-center justify-center px-4 py-8">

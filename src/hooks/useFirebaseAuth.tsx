@@ -1,15 +1,30 @@
 "use client";
 
 // useFirebaseAuth.js (new file)
-import { useState } from "react";
-import { signInWithPopup } from "firebase/auth";
+import { useState, useEffect } from "react";
+import {
+  signInWithPopup,
+  onAuthStateChanged,
+  User as FirebaseUser,
+} from "firebase/auth";
 import { FirebaseError } from "firebase/app";
 import { auth, provider } from "@/lib/firebase";
 // import confetti from "canvas-confetti";
 
 export function useFirebaseAuth() {
+  const [user, setUser] = useState<FirebaseUser | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (authUser) => {
+      setUser(authUser);
+      setIsLoading(false);
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, []);
 
   async function handleGoogleLogin() {
     try {
@@ -32,10 +47,13 @@ export function useFirebaseAuth() {
     }
   }
 
+  const clearError = () => setError(null);
+
   return {
+    user,
     isLoading,
     error,
     handleGoogleLogin,
-    clearError: () => setError(null),
+    clearError,
   };
 }
