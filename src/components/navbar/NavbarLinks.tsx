@@ -21,6 +21,10 @@ const links = [
     label: " Dashboard",
     path: "/dashboard",
   },
+  {
+    label: " Habits",
+    path: "/habits",
+  },
 ];
 
 export default function NavbarLinks() {
@@ -28,7 +32,7 @@ export default function NavbarLinks() {
 
   return (
     <NavigationMenu>
-      <NavigationMenuList className="flex justify-center space-x-8">
+      <NavigationMenuList className="flex justify-center md:space-x-8">
         {links.map((link) => {
           const isActive = pathname === link.path;
           return (
