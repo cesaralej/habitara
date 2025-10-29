@@ -1,7 +1,7 @@
 // app/dashboard/DateNavigator.tsx
 "use client";
 
-import { format } from "date-fns";
+import { format, isSameDay } from "date-fns";
 import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
 
 interface DateNavigatorProps {
@@ -13,6 +13,8 @@ export default function DateNavigator({
   currentDate,
   onDateChange,
 }: DateNavigatorProps) {
+  const isToday = isSameDay(currentDate, new Date());
+
   const goPrev = () => {
     const newDate = new Date(currentDate);
     newDate.setDate(currentDate.getDate() - 1);
@@ -48,9 +50,13 @@ export default function DateNavigator({
       <div className="flex items-center space-x-2">
         <button
           onClick={goToday}
-          className="px-2 py-1 text-sm rounded-lg bg-blue-500 text-white hover:bg-blue-600"
+          className={`px-2 py-1 text-sm rounded-lg ${
+            isToday
+              ? "bg-green-500 text-white"
+              : "bg-blue-500 text-white hover:bg-blue-600"
+          }`}
         >
-          Today
+          {isToday ? "Today" : "Go to Today"}
         </button>
         <button onClick={goNext} className="p-2 rounded-xl hover:bg-gray-200">
           <ChevronRight className="w-5 h-5" />

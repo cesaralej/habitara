@@ -4,13 +4,7 @@
 import { useState } from "react";
 import { CheckSquare, Square } from "lucide-react";
 
-interface Habit {
-  id: string;
-  name: string;
-  frequency: "daily" | "weekly";
-  createdAt: string;
-  disabledAt: string | null;
-}
+import { Habit } from "@/types";
 
 interface HabitItemProps {
   habit: Habit;
