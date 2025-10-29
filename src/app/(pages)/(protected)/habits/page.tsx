@@ -20,6 +20,7 @@ function HabitsPage() {
 
   const handleEdit = (habit: Habit) => {
     setEditData(habit);
+    // console.log(habit);
     setShowSheet(true);
   };
 

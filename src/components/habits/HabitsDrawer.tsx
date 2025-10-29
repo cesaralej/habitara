@@ -9,11 +9,11 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import HabitForm from "@/components/habits/HabitsForm";
+import HabitsDetails from "./HabitsDetails";
 import { useHabits } from "@/contexts/HabitsContext";
 import { Habit, HabitData } from "@/types";
 
-interface HabitDrawerProps {
-  isEdit?: boolean;
+interface HabitsDrawerProps {
   showSheet: boolean;
   setShowSheet: (show: boolean) => void;
   initialData?: Partial<Habit> | null;
@@ -22,15 +22,14 @@ interface HabitDrawerProps {
   onSubmit: (habitData: HabitData, habitId?: string) => Promise<void>;
 }
 
-function HabitsDrawer({
-  isEdit = false,
+export default function HabitsDrawer({
   showSheet,
   setShowSheet,
   initialData,
   // onAddHabit,
   // onEditHabit,
   onSubmit,
-}: HabitDrawerProps) {
+}: HabitsDrawerProps) {
   const { deleteHabit } = useHabits();
 
   // State to manage the mode within the drawer when isEdit is true
@@ -38,11 +37,11 @@ function HabitsDrawer({
 
   // Reset mode to 'view' when the drawer is opened for editing an existing item
   useEffect(() => {
-    if (showSheet && isEdit) {
+    if (showSheet && initialData) {
       setMode("view");
     }
     // If opening for 'Add', mode doesn't matter
-  }, [showSheet, isEdit]);
+  }, [showSheet, initialData]);
 
   const handleDelete = async () => {
     if (
@@ -62,7 +61,7 @@ function HabitsDrawer({
 
   // Determine Drawer Title based on state
   const getDrawerTitle = (description: string) => {
-    if (!isEdit) return "Add Habit Item";
+    if (!initialData) return "Add Habit Item";
     switch (mode) {
       case "view":
         return `Details for ${description}`;
@@ -73,129 +72,41 @@ function HabitsDrawer({
     }
   };
 
+  const isNew = !initialData;
+
   return (
     <Drawer open={showSheet} onOpenChange={setShowSheet}>
       <DrawerContent className="max-h-[90vh]">
-        {" "}
         <DrawerHeader className="text-left">
-          <DrawerTitle>{getDrawerTitle(initialData?.name || "")}</DrawerTitle>
+          <DrawerTitle>
+            {getDrawerTitle(initialData?.name || "Habit")}
+          </DrawerTitle>
         </DrawerHeader>
-        {/* Scrollable content area */}
+
         <ScrollArea className="overflow-y-auto px-4">
-          {" "}
-          {/* Add padding here */}
           <div className="py-4">
-            {" "}
-            {/* Inner padding */}
-            {/* --- Mode 1: Add New Habit Item --- */}
-            {!isEdit && (
+            {isNew ? (
               <HabitForm
                 setShowSheet={setShowSheet}
-                initialData={null} // Add mode
-                onSubmit={async (data) => {
-                  await onSubmit(data, initialData?.id);
-                }}
+                initialData={null}
+                onSubmit={(data) => onSubmit(data)}
               />
-            )}
-            {/* --- Mode 2: View Existing Habit Item Details --- */}
-            {isEdit && mode === "view" && initialData && (
-              <div className="space-y-6">
-                {/* Display basic info (customize as needed) 
-                <div>
-                  <h3 className="font-semibold mb-1">Description</h3>
-                  <p className="text-gray-700">{initialData.description}</p>
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-1">Amount</h3>
-                  <p className="text-gray-700">{initialData.amount}€</p>
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-1">Due Day</h3>
-                  <p className="text-gray-700">{initialData.dueDate}</p>
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-1">Account</h3>
-                  <p className="text-gray-700 capitalize">
-                    {initialData.account}
-                  </p>
-                </div>*/}
-                {/* --- Habit History Placeholder --- */}
-                <div className="">
-                  <h3 className="font-semibold mb-2 text-lg border-b pb-1">
-                    Habit History
-                  </h3>
-                  <div className="space-y-2 text-sm">
-                    {/* {habitHistory.length > 0 ? (
-                      habitHistory.map((habit) => (
-                        <div
-                          key={habit.id}
-                          className="flex justify-between items-center p-2 rounded bg-gray-50"
-                        >
-                          <span>
-                            {habit.date
-                              ? habit.date.toLocaleDateString("en-US", {
-                                  year: "numeric",
-                                  month: "2-digit",
-                                  day: "2-digit",
-                                })
-                              : "No Date"}
-                          </span>
-                          <span className="font-medium">{habit.amount}€</span>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-center text-gray-500 py-4">
-                        No recent habit history found.
-                      </p>
-                    )} */}
-                    <p className="text-center text-gray-500 py-4">
-                      No recent habit history found.
-                    </p>
-                  </div>
-                </div>
-
-                {/* --- Action Buttons --- */}
-                <div className="flex flex-col sm:flex-row gap-3 pt-4">
-                  <Button
-                    onClick={() => setMode("edit")}
-                    variant="outline"
-                    className="flex-1"
-                  >
-                    Edit Details
-                  </Button>
-
-                  <Button
-                    variant="destructive" // Use destructive variant
-                    onClick={handleDelete}
-                    className="w-full" // Make it full width
-                  >
-                    Delete Habit
-                  </Button>
-                </div>
-
-                {/* --- Delete Button --- */}
-                <div className=""></div>
-              </div>
-            )}
-            {/* --- Mode 3: Edit Existing Habit Item --- */}
-            {isEdit && mode === "edit" && (
+            ) : mode === "view" ? (
+              <HabitsDetails
+                habit={initialData as Habit}
+                onEdit={() => setMode("edit")}
+                onDelete={handleDelete}
+              />
+            ) : (
               <HabitForm
                 setShowSheet={setShowSheet}
                 initialData={initialData}
-                onSubmit={async (data) => {
-                  if (initialData?.id) {
-                    await onSubmit(data, initialData?.id);
-                  }
-                }}
+                onSubmit={(data) => onSubmit(data, initialData.id)}
               />
-
-              // Optionally add a "Cancel Edit" button here or rely on drawer close
             )}
-            {/* --- Mode 4: Pay Existing Habit Item (Show Transaction Form) --- */}
           </div>
         </ScrollArea>
-        {/* Footer can be used for general actions like Close, or removed if actions are inline */}
-        {/* Example: Add a close button if needed, especially for edit/pay modes */}
+
         {mode === "edit" && (
           <DrawerFooter className="border-t pt-4">
             <Button variant="outline" onClick={() => setMode("view")}>
@@ -207,4 +118,3 @@ function HabitsDrawer({
     </Drawer>
   );
 }
-export default HabitsDrawer;
