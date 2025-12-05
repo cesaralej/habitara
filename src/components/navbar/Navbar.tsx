@@ -10,8 +10,10 @@ export default function Navbar() {
         {/* Logo and Brand */}
         <Brand />
         {/* Navbar Links for Desktop */}
-        <NavbarLinks />
-        {/* User Menu / Sign In Button */}
+         <div className="hidden md:block">
+          <NavbarLinks />
+         </div>
+         {/* User Menu / Sign In Button */}
         <UserMenu isLoggedIn={false} />
       </div>
     </header>

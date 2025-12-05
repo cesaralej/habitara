@@ -4,6 +4,7 @@ import "./globals.css";
 
 import Providers from "./providers";
 import Navbar from "../components/navbar/Navbar";
+import BottomNav from "@/components/navbar/BottomNav";
 import Footer from "@/components/footer/Footer";
 
 const geistSans = Geist({
@@ -40,8 +41,9 @@ export default function RootLayout({
       >
         <Providers>
           <Navbar />
+          <BottomNav />
 
-          <main className="flex-grow bg-gradient-to-b from-zinc-50 to-zinc-100 dark:from-zinc-950 dark:to-zinc-900 p-4">
+          <main className="flex-grow bg-gradient-to-b from-zinc-50 to-zinc-100 dark:from-zinc-950 dark:to-zinc-900 p-4 pb-20 md:pb-4">
             {children}
             {/* {children} */}
           </main>

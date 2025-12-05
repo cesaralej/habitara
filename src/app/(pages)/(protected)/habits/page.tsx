@@ -52,7 +52,7 @@ function HabitsPage() {
       {/* buton to add a new habit*/}
       <button
         onClick={handleAdd}
-        className="fixed bottom-6 right-6 bg-blue-500 hover:bg-blue-700 text-white rounded-full p-3 shadow-lg transition duration-300 ease-in-out transform hover:scale-110  z-30"
+        className="fixed bottom-20 md:bottom-6 right-6 bg-blue-500 hover:bg-blue-700 text-white rounded-full p-3 shadow-lg transition duration-300 ease-in-out transform hover:scale-110  z-30"
       >
         <PlusIcon size={24} />
       </button>
