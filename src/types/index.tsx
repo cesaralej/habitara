@@ -18,3 +18,12 @@ export interface HabitData {
 }
 
 export const HABIT_FREQUENCIES = ["daily", "weekly", "monthly"] as const;
+
+export interface HabitCompletion {
+  id: string; // composite key: habitId_dateString
+  habitId: string;
+  date: string; // YYYY-MM-DD
+  completed: boolean;
+  frequency: HabitFrequency;
+  completedAt: number;
+}

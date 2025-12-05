@@ -2,32 +2,28 @@
 import { useState, useEffect } from "react";
 import DateNavigator from "@/components/dashboard/DateNavigator";
 import HabitList from "@/components/dashboard/HabitList";
+import { useDateCompletions } from "@/hooks/useDateCompletions";
 
 export default function DashboardPage() {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [habits, setHabits] = useState<any[]>([]);
-  const [completions, setCompletions] = useState<Record<string, any>>({});
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // 🚧 replace with Firebase later
-    setLoading(false);
-  }, [currentDate]); // will re-run when the date changes
-
-  // Format date as YYYY-MM-DD (for Firestore keys)
+  // Format date as YYYY-MM-DD
   const formatDate = (date: Date) => date.toISOString().split("T")[0];
+  const dateString = formatDate(currentDate);
 
-  if (loading) return <div className="p-4">Loading...</div>;
+  // Fetch completions for the selected date
+  const { completions, loading: completionsLoading } = useDateCompletions(dateString);
+
+  // Note: We don't block UI on loading completions to keep it snappy.
+  // HabitList handles empty/loading state gracefully (or treats missing as unchecked).
 
   return (
     <div className="p-4 space-y-4">
-      {/* Date Navigation */}
       <DateNavigator currentDate={currentDate} onDateChange={setCurrentDate} />
 
-      {/* Habit List for the Day */}
       <HabitList
         completions={completions}
-        currentDate={formatDate(currentDate)}
+        currentDate={dateString}
       />
     </div>
   );

@@ -6,10 +6,10 @@ import HabitItem from "./HabitItem";
 //Import habits here or in the dashboard?
 import { useHabits } from "@/contexts/HabitsContext";
 
-import { Habit } from "@/types";
+import { Habit, HabitCompletion } from "@/types";
 
 interface HabitListProps {
-  completions: Record<string, any>;
+  completions: Record<string, HabitCompletion>;
   currentDate: string; // YYYY-MM-DD
 }
 
@@ -31,16 +31,13 @@ export default function HabitList({
     <div className="space-y-2">
       {habits.map((habit) => {
         // Check if habit should be visible for this date
-        const created = new Date(habit.createdAt);
-        const current = new Date(currentDate);
-
-        // const isVisible = habit.active && created <= current;
+        // For simple MVP, show all active habits
         const isVisible = habit.active;
 
         if (!isVisible) return null;
 
         // Grab completion state
-        const completed = completions[habit.id]?.done ?? false;
+        const completed = completions[habit.id]?.completed ?? false;
 
         return (
           <HabitItem

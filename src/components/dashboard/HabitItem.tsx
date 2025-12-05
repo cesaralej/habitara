@@ -1,9 +1,9 @@
 // app/dashboard/HabitItem.tsx
 "use client";
 
-import { useState } from "react";
 import { CheckSquare, Square } from "lucide-react";
 
+import { useHabits } from "@/contexts/HabitsContext";
 import { Habit } from "@/types";
 
 interface HabitItemProps {
@@ -17,17 +17,21 @@ export default function HabitItem({
   completed,
   currentDate,
 }: HabitItemProps) {
-  const [isCompleted, setIsCompleted] = useState(completed);
+  // Use optimistic UI or wait for parent re-render?
+  // We receive `completed` from parent (from context), so let's rely on that.
+  // However, for immediate feedback we might want local state or just optimistic update.
+  // `useHabits` context update should be fast enough for local dev?
+  // Let's use the prop `completed` directly and just call the toggle function.
+  const { toggleHabitCompletion } = useHabits();
 
-  const toggleCompletion = () => {
-    setIsCompleted((prev) => !prev);
-
-    // 🚧 TODO: integrate Firebase later
-    console.log(
-      `Habit ${habit.name} (${habit.id}) for ${currentDate} marked as ${
-        !isCompleted ? "complete" : "incomplete"
-      }`
-    );
+  const toggleCompletion = async () => {
+    // Optimistic toggle? 
+    // If we rely on props, we wait for Firestore roundtrip.
+    try {
+        await toggleHabitCompletion(habit.id, currentDate, !completed);
+    } catch (e) {
+        console.error("Failed to toggle", e);
+    }
   };
 
   return (
@@ -35,7 +39,7 @@ export default function HabitItem({
       {/* Habit name */}
       <span
         className={`text-base ${
-          isCompleted ? "line-through text-gray-400" : ""
+          completed ? "line-through text-gray-400" : ""
         }`}
       >
         {habit.name}
@@ -46,7 +50,7 @@ export default function HabitItem({
         onClick={toggleCompletion}
         className="p-2 rounded-lg hover:bg-gray-100"
       >
-        {isCompleted ? (
+        {completed ? (
           <CheckSquare className="w-6 h-6 text-green-500" />
         ) : (
           <Square className="w-6 h-6 text-gray-400" />

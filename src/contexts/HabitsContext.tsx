@@ -8,12 +8,13 @@ import {
   addDoc,
   deleteDoc,
   updateDoc,
+  setDoc,
   doc,
   FirestoreError,
 } from "firebase/firestore";
 import { db } from "../lib/firebase";
 import { useFirebaseAuth } from "@/hooks/useFirebaseAuth";
-import { Habit, HabitData } from "@/types";
+import { Habit, HabitData, HabitCompletion } from "@/types";
 
 export interface HabitsContextType {
   habits: Habit[] | null;
@@ -26,6 +27,11 @@ export interface HabitsContextType {
   ) => Promise<void>;
   deleteHabit: (habitId: string) => Promise<void>;
   totalActiveHabits: number;
+  toggleHabitCompletion: (
+    habitId: string,
+    date: string,
+    isCompleted: boolean
+  ) => Promise<void>;
 }
 
 const HabitsContext = createContext<HabitsContextType | null>(null);
@@ -80,6 +86,11 @@ export const HabitsProvider: React.FC<{ children: React.ReactNode }> = ({
     return () => unsubscribe();
   }, [user, isLoading]);
 
+  
+  // Re-writing the subscription correctly in next steps or assuming I will add `where`.
+  // Let's stick to the plan:
+  // Add `toggleHabitCompletion` implementation.
+
   const addHabit = async (habitData: HabitData) => {
     if (!user) {
       console.error("User not logged in. Cannot add habit.");
@@ -133,6 +144,38 @@ export const HabitsProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  const toggleHabitCompletion = async (
+    habitId: string,
+    date: string,
+    isCompleted: boolean
+  ) => {
+    if (!user) return;
+
+    // specific doc ID: habitId_date
+    const completionId = `${habitId}_${date}`;
+    const completionRef = doc(db, "users", user.uid, "completions", completionId);
+
+    try {
+      if (isCompleted) {
+        // Create/Set
+        const completionData: HabitCompletion = {
+          id: completionId,
+          habitId,
+          date,
+          completed: true,
+          frequency: "daily", // simplified
+          completedAt: Date.now(),
+        };
+        await setDoc(completionRef, completionData);
+      } else {
+        // Delete
+        await deleteDoc(completionRef);
+      }
+    } catch (err) {
+      console.error("Error toggling completion:", err);
+    }
+  };
+
   const totalActiveHabits = (habits ?? []).filter((h) => h.active).length;
 
   return (
@@ -145,6 +188,7 @@ export const HabitsProvider: React.FC<{ children: React.ReactNode }> = ({
         updateHabit,
         deleteHabit,
         totalActiveHabits,
+        toggleHabitCompletion,
       }}
     >
       {children}
