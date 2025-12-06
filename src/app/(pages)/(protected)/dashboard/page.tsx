@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import DateNavigator from "@/components/dashboard/DateNavigator";
 import HabitList from "@/components/dashboard/HabitList";
 import { useDateCompletions } from "@/hooks/useDateCompletions";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { useAuth } from "@/contexts/auth";
 
 export default function DashboardPage() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -17,14 +19,30 @@ export default function DashboardPage() {
   // Note: We don't block UI on loading completions to keep it snappy.
   // HabitList handles empty/loading state gracefully (or treats missing as unchecked).
 
-  return (
-    <div className="p-4 space-y-4">
-      <DateNavigator currentDate={currentDate} onDateChange={setCurrentDate} />
+  const { user } = useAuth();
 
-      <HabitList
-        completions={completions}
-        currentDate={dateString}
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 18) return "Good afternoon";
+    return "Good evening";
+  };
+
+  return (
+    <div className="space-y-6 pb-20 md:pb-4">
+      <PageHeader 
+        title={`${getGreeting()}, ${user?.displayName?.split(" ")[0] || "there"}`} 
+        description="Here's your overview for today."
       />
+
+      <div className="space-y-4">
+        <DateNavigator currentDate={currentDate} onDateChange={setCurrentDate} />
+
+        <HabitList
+          completions={completions}
+          currentDate={dateString}
+        />
+      </div>
     </div>
   );
 }

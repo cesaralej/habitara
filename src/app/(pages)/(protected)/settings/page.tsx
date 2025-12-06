@@ -13,17 +13,15 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Bell, Moon, Smartphone } from "lucide-react";
 import Link from "next/link";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 export default function SettingsPage() {
   return (
-    <div className="space-y-6 max-w-2xl mx-auto py-8">
-      <div>
-        <h3 className="text-2xl font-semibold leading-none tracking-tight">Settings</h3>
-        <p className="text-sm text-gray-500 mt-2">
-          Manage your app preferences and notifications.
-        </p>
-      </div>
-      <Separator />
+    <div className="space-y-6 pb-20 md:pb-4">
+      <PageHeader
+        title="Settings"
+        description="Manage your app preferences and notifications."
+      />
 
       {/* Appearance */}
       <Card>

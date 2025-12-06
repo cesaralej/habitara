@@ -6,6 +6,8 @@ import { PlusIcon } from "lucide-react";
 import { useHabits } from "@/contexts/HabitsContext";
 import HabitDrawer from "@/components/habits/HabitsDrawer";
 import { Habit, HabitData } from "@/types";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { Button } from "@/components/ui/button";
 // import { toast } from "sonner";
 
 function HabitsPage() {
@@ -47,12 +49,21 @@ function HabitsPage() {
   };
 
   return (
-    <>
-      <h2 className="text-2xl font-semibold mb-4 mt-4">Habits</h2>
-      {/* buton to add a new habit*/}
+    <div className="space-y-6 pb-20 md:pb-4">
+      <PageHeader
+        title="My Habits"
+        description="Manage your daily routines and track your progress."
+        action={
+          <Button onClick={handleAdd} className="hidden md:flex">
+            <PlusIcon className="mr-2 h-4 w-4" /> Add Habit
+          </Button>
+        }
+      />
+
+      {/* FAB for mobile only */}
       <button
         onClick={handleAdd}
-        className="fixed bottom-20 md:bottom-6 right-6 bg-blue-500 hover:bg-blue-700 text-white rounded-full p-3 shadow-lg transition duration-300 ease-in-out transform hover:scale-110  z-30"
+        className="md:hidden fixed bottom-20 right-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full p-3 shadow-lg transition-transform hover:scale-110 z-30"
       >
         <PlusIcon size={24} />
       </button>
@@ -64,7 +75,7 @@ function HabitsPage() {
       />
 
       <HabitList onEdit={handleEdit} />
-    </>
+    </div>
   );
 }
 export default HabitsPage;

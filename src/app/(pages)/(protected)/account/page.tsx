@@ -14,19 +14,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 export default function AccountPage() {
   const { user } = useAuth();
 
   return (
-    <div className="space-y-6 max-w-2xl mx-auto py-8">
-      <div>
-        <h3 className="text-2xl font-semibold leading-none tracking-tight">Account</h3>
-        <p className="text-sm text-gray-500 mt-2">
-          Manage your account settings and preferences.
-        </p>
-      </div>
-      <Separator />
+    <div className="space-y-6 pb-20 md:pb-4">
+      <PageHeader
+        title="Account"
+        description="Manage your account settings and preferences."
+      />
 
       {/* Profile Section */}
       <Card>
