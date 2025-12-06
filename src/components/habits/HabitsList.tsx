@@ -38,15 +38,13 @@ const HabitList: FC<HabitListProps> = ({ onEdit }) => {
   return (
     <div className="space-y-8 pb-24">
       {/* Active Habits */}
-      <div className="space-y-4">
+      <div className="space-y-2">
         {activeHabits.length > 0 ? (
           activeHabits.map((habit) => (
             <HabitCard
               key={habit.id}
               habit={habit}
               onEdit={onEdit}
-              onArchive={handleArchive}
-              onDelete={handleDelete}
             />
           ))
         ) : (
@@ -69,14 +67,12 @@ const HabitList: FC<HabitListProps> = ({ onEdit }) => {
             </div>
             
             {showArchived && (
-                <div className="space-y-4 opacity-75">
+                <div className="space-y-2 opacity-75">
                     {archivedHabits.map((habit) => (
                         <HabitCard
                         key={habit.id}
                         habit={habit}
                         onEdit={onEdit}
-                        onArchive={handleArchive}
-                        onDelete={handleDelete}
                         />
                     ))}
                 </div>

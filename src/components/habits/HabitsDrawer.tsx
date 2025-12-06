@@ -74,6 +74,17 @@ export default function HabitsDrawer({
 
   const isNew = !initialData;
 
+  const handleArchive = async (habit: Habit) => {
+    if (onSubmit) {
+         // Reusing onSubmit to handle updates, including active status/archiving
+         // We need to pass the updated data.
+         await onSubmit({ ...habit, active: !habit.active }, habit.id);
+         // Keep drawer open or close? Probably keep open to show updated status or close?
+         // Let's close it for now as it's a major action.
+         setShowSheet(false);
+    }
+  };
+
   return (
     <Drawer open={showSheet} onOpenChange={setShowSheet}>
       <DrawerContent className="max-h-[90vh]">
@@ -96,6 +107,7 @@ export default function HabitsDrawer({
                 habit={initialData as Habit}
                 onEdit={() => setMode("edit")}
                 onDelete={handleDelete}
+                onArchive={handleArchive}
               />
             ) : (
               <HabitForm
