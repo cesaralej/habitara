@@ -2,6 +2,7 @@
 "use client";
 
 import { CheckSquare, Square } from "lucide-react";
+import { useState } from "react";
 
 import { useHabits } from "@/contexts/HabitsContext";
 import { Habit } from "@/types";
@@ -17,29 +18,27 @@ export default function HabitItem({
   completed,
   currentDate,
 }: HabitItemProps) {
-  // Use optimistic UI or wait for parent re-render?
-  // We receive `completed` from parent (from context), so let's rely on that.
-  // However, for immediate feedback we might want local state or just optimistic update.
-  // `useHabits` context update should be fast enough for local dev?
-  // Let's use the prop `completed` directly and just call the toggle function.
   const { toggleHabitCompletion } = useHabits();
+  const [isAnimating, setIsAnimating] = useState(false);
 
   const toggleCompletion = async () => {
-    // Optimistic toggle? 
-    // If we rely on props, we wait for Firestore roundtrip.
+    // Trigger animation
+    setIsAnimating(true);
+    setTimeout(() => setIsAnimating(false), 400);
+
     try {
-        await toggleHabitCompletion(habit.id, currentDate, !completed);
+      await toggleHabitCompletion(habit.id, currentDate, !completed);
     } catch (e) {
-        console.error("Failed to toggle", e);
+      console.error("Failed to toggle", e);
     }
   };
 
   return (
-    <div className="flex items-center justify-between p-3 bg-white rounded-xl shadow-sm hover:shadow-md transition">
+    <div className="flex items-center justify-between p-3 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200">
       {/* Habit name */}
       <span
-        className={`text-base ${
-          completed ? "line-through text-gray-400" : ""
+        className={`text-base transition-all duration-300 ${
+          completed ? "line-through text-gray-400" : "text-gray-900"
         }`}
       >
         {habit.name}
@@ -48,12 +47,27 @@ export default function HabitItem({
       {/* Checkbox */}
       <button
         onClick={toggleCompletion}
-        className="p-2 rounded-lg hover:bg-gray-100"
+        className={`p-2 rounded-lg hover:bg-gray-100 transition-all duration-200 ${
+          isAnimating ? "scale-110" : "scale-100"
+        }`}
+        style={{
+          transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease",
+          boxShadow: isAnimating 
+            ? "0 0 20px rgba(34, 197, 94, 0.4), 0 0 10px rgba(34, 197, 94, 0.2)" 
+            : "none",
+        }}
       >
         {completed ? (
-          <CheckSquare className="w-6 h-6 text-green-500" />
+          <CheckSquare 
+            className={`w-6 h-6 text-green-500 transition-all duration-300 ${
+              isAnimating ? "rotate-12" : "rotate-0"
+            }`}
+            style={{
+              filter: isAnimating ? "drop-shadow(0 0 8px rgba(34, 197, 94, 0.5))" : "none",
+            }}
+          />
         ) : (
-          <Square className="w-6 h-6 text-gray-400" />
+          <Square className="w-6 h-6 text-gray-400 transition-colors duration-200 hover:text-gray-600" />
         )}
       </button>
     </div>
