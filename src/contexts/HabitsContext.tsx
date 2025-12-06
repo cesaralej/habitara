@@ -18,6 +18,7 @@ import { Habit, HabitData, HabitCompletion } from "@/types";
 
 export interface HabitsContextType {
   habits: Habit[] | null;
+  completions: Record<string, HabitCompletion>; 
   loading: boolean;
   error: FirestoreError | null;
   addHabit: (habitData: HabitData) => Promise<void>;
@@ -41,6 +42,7 @@ export const HabitsProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const { user, isLoading } = useFirebaseAuth();
   const [habits, setHabits] = useState<Habit[] | null>(null);
+  const [completions, setCompletions] = useState<Record<string, HabitCompletion>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<FirestoreError | null>(null);
 
@@ -48,14 +50,16 @@ export const HabitsProvider: React.FC<{ children: React.ReactNode }> = ({
     if (isLoading || !user) {
       setLoading(false);
       setHabits(null);
+      setCompletions({});
       return;
     }
 
+    // 1. Fetch Habits
     const habitsCollectionRef = collection(db, "users", user.uid, "habits");
-    const q = query(habitsCollectionRef);
+    const qHabits = query(habitsCollectionRef);
 
-    const unsubscribe = onSnapshot(
-      q,
+    const unsubscribeHabits = onSnapshot(
+      qHabits,
       (snapshot) => {
         const habitsData: Habit[] = snapshot.docs.map((doc) => {
           const data = doc.data();
@@ -75,15 +79,58 @@ export const HabitsProvider: React.FC<{ children: React.ReactNode }> = ({
         );
 
         setHabits(sortedHabits);
-        setLoading(false);
       },
       (err) => {
+        console.error("Error fetching habits:", err);
         setError(err);
-        setLoading(false);
       }
     );
 
-    return () => unsubscribe();
+    // 2. Fetch Completions (All of them)
+    // Optimization: In a real large app, you might only fetch recents, 
+    // but for streak calc we pretty much need history or a stored 'streak' field.
+    // Fetching all for now is fine for MVP.
+    const completionsCollectionRef = collection(db, "users", user.uid, "completions");
+    const qCompletions = query(completionsCollectionRef);
+
+    const unsubscribeCompletions = onSnapshot(
+      qCompletions,
+      (snapshot) => {
+        const completionsMap: Record<string, HabitCompletion> = {};
+        snapshot.docs.forEach((doc) => {
+            // ID format: habitId_date (usually)
+            // But we might have just random IDs if we moved to that?
+            // Wait, toggleHabitCompletion uses `${habitId}_${date}`.
+            // Let's store them in a Map by ID for easy lookup, 
+            // OR grouped by HabitID for stats calculation.
+            // Storing flat map is good context state, but stats need grouping.
+            // Let's store flat map for date lookups, but we might want an array for stats.
+            // Actually, for stats we need an array.
+            
+            const data = doc.data();
+            completionsMap[doc.id] = {
+                id: doc.id,
+                habitId: data.habitId,
+                date: data.date,
+                completed: data.completed,
+                frequency: data.frequency,
+                completedAt: data.completedAt
+            };
+        });
+        setCompletions(completionsMap);
+        setLoading(false); // Only done loading when both are potentially ready
+      },
+      (err) => {
+         console.error("Error fetching completions:", err);
+         setError(err);
+         setLoading(false);
+      }
+    );
+
+    return () => {
+        unsubscribeHabits();
+        unsubscribeCompletions();
+    };
   }, [user, isLoading]);
 
   
@@ -182,6 +229,7 @@ export const HabitsProvider: React.FC<{ children: React.ReactNode }> = ({
     <HabitsContext.Provider
       value={{
         habits,
+        completions,
         loading,
         error,
         addHabit,

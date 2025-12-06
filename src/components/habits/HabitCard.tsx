@@ -12,7 +12,7 @@ export const HabitCard: FC<HabitCardProps> = ({
   habit,
   onEdit,
 }) => {
-  const { streak, weeklyCompletions, loading } = useHabitStats(habit.id);
+  const { streak, totalCompletions, loading } = useHabitStats(habit.id);
 
   return (
     <div 
@@ -35,7 +35,7 @@ export const HabitCard: FC<HabitCardProps> = ({
         <div className="flex items-center gap-1 text-blue-500">
           <CheckCircle2 className="h-3.5 w-3.5" />
           <span className="font-medium">
-            {loading ? "..." : weeklyCompletions}
+            {loading ? "..." : totalCompletions}
           </span>
         </div>
       </div>
