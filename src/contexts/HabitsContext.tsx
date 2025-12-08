@@ -12,6 +12,7 @@ import {
   doc,
   FirestoreError,
 } from "firebase/firestore";
+import { format, startOfWeek, startOfMonth } from "date-fns";
 import { db } from "../lib/firebase";
 import { useFirebaseAuth } from "@/hooks/useFirebaseAuth";
 import { Habit, HabitData, HabitCompletion } from "@/types";
@@ -66,7 +67,7 @@ export const HabitsProvider: React.FC<{ children: React.ReactNode }> = ({
           return {
             id: doc.id,
             name: data.name,
-            frequency: data.type,
+            frequency: data.frequency ?? data.type,
             active: data.active ?? true,
             details: data.details,
             createdAt: data.createdAt ?? Date.now(),
@@ -196,10 +197,37 @@ export const HabitsProvider: React.FC<{ children: React.ReactNode }> = ({
     date: string,
     isCompleted: boolean
   ) => {
-    if (!user) return;
+    if (!user || !habits) return;
 
-    // specific doc ID: habitId_date
-    const completionId = `${habitId}_${date}`;
+    // Find the habit to check its frequency
+    const habit = habits.find(h => h.id === habitId);
+    if (!habit) {
+        console.error("Habit not found");
+        return;
+    }
+
+    let completionDateKey = date;
+    const targetDate = new Date(date);
+
+    // Logic: 
+    // Daily: separate entry per day (default key is 'YYYY-MM-DD')
+    // Weekly: one entry per week (e.g. 'YYYY-MM-DD' of the Monday of that week)
+    // Monthly: one entry per month (e.g. 'YYYY-MM-01')
+    
+    if (habit.frequency === 'weekly') {
+        // Use the start of the week as the key
+        // Assuming ISO week starts on Monday, but date-fns startOfWeek defaults to Sunday.
+        // Let's stick to startOfWeek(date, { weekStartsOn: 1 }) for Monday start if desired, 
+        // or just standard Sunday. Let's use Monday (1) standard for many.
+        const weekStart = startOfWeek(targetDate, { weekStartsOn: 1 });
+        completionDateKey = format(weekStart, "yyyy-MM-dd");
+    } else if (habit.frequency === 'monthly') {
+        const monthStart = startOfMonth(targetDate);
+        completionDateKey = format(monthStart, "yyyy-MM-dd");
+    }
+    
+    // Key format: habitId_dateKey
+    const completionId = `${habitId}_${completionDateKey}`;
     const completionRef = doc(db, "users", user.uid, "completions", completionId);
 
     try {
@@ -208,9 +236,9 @@ export const HabitsProvider: React.FC<{ children: React.ReactNode }> = ({
         const completionData: HabitCompletion = {
           id: completionId,
           habitId,
-          date,
+          date: completionDateKey, // Store the period key
           completed: true,
-          frequency: "daily", // simplified
+          frequency: habit.frequency,
           completedAt: Date.now(),
         };
         await setDoc(completionRef, completionData);

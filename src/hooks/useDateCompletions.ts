@@ -1,47 +1,38 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import { collection, query, where, onSnapshot } from "firebase/firestore";
-import { db } from "@/lib/firebase";
-import { useFirebaseAuth } from "@/hooks/useFirebaseAuth";
+import { useMemo } from "react";
+import { useHabits } from "@/contexts/HabitsContext";
 import { HabitCompletion } from "@/types";
+import { format, startOfWeek, startOfMonth } from "date-fns";
 
 export const useDateCompletions = (date: string) => {
-  const { user, isLoading: authLoading } = useFirebaseAuth();
-  const [completions, setCompletions] = useState<Record<string, HabitCompletion>>({});
-  const [loading, setLoading] = useState(true);
+  const { habits, completions, loading } = useHabits();
 
-  useEffect(() => {
-    if (authLoading || !user) {
-      if (!authLoading) setLoading(false);
-      setCompletions({});
-      return;
-    }
+  const dateCompletions = useMemo(() => {
+    if (!habits || loading) return {};
 
-    setLoading(true);
-    const completionsRef = collection(db, "users", user.uid, "completions");
-    // Query for the specific date
-    const q = query(completionsRef, where("date", "==", date));
+    const targetDate = new Date(date);
+    // Calculate keys once
+    const dailyKey = date;
+    const weeklyKey = format(startOfWeek(targetDate, { weekStartsOn: 1 }), "yyyy-MM-dd");
+    const monthlyKey = format(startOfMonth(targetDate), "yyyy-MM-dd");
 
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        const newCompletions: Record<string, HabitCompletion> = {};
-        snapshot.docs.forEach((doc) => {
-          const data = doc.data() as HabitCompletion;
-          newCompletions[data.habitId] = data;
-        });
-        setCompletions(newCompletions);
-        setLoading(false);
-      },
-      (error) => {
-        console.error("Error fetching completions for date:", date, error);
-        setLoading(false);
+    const result: Record<string, HabitCompletion> = {};
+
+    habits.forEach((habit) => {
+      let key = dailyKey;
+      if (habit.frequency === "weekly") key = weeklyKey;
+      if (habit.frequency === "monthly") key = monthlyKey;
+
+      // Construct ID: habitId_dateKey
+      const completionId = `${habit.id}_${key}`;
+      
+      // Check if it exists in the global completions map
+      if (completions[completionId]) {
+        result[habit.id] = completions[completionId];
       }
-    );
+    });
 
-    return () => unsubscribe();
-  }, [date, user, authLoading]);
+    return result;
+  }, [date, habits, completions, loading]);
 
-  return { completions, loading };
+  return { completions: dateCompletions, loading };
 };
