@@ -26,4 +26,5 @@ export interface HabitCompletion {
   completed: boolean;
   frequency: HabitFrequency;
   completedAt: number;
+  details?: string;
 }

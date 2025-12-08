@@ -1,25 +1,39 @@
-// app/dashboard/HabitItem.tsx
-"use client";
-
-import { CheckSquare, Square } from "lucide-react";
-import { useState } from "react";
+import { CheckSquare, Square, Check } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
 
 import { useHabits } from "@/contexts/HabitsContext";
-import { Habit } from "@/types";
+import { Habit, HabitCompletion } from "@/types";
 
 interface HabitItemProps {
   habit: Habit;
-  completed: boolean;
+  completion?: HabitCompletion;
   currentDate: string; // YYYY-MM-DD
 }
 
 export default function HabitItem({
   habit,
-  completed,
+  completion,
   currentDate,
 }: HabitItemProps) {
-  const { toggleHabitCompletion } = useHabits();
+  const { toggleHabitCompletion, updateHabitCompletionDetails } = useHabits();
   const [isAnimating, setIsAnimating] = useState(false);
+  const [showDetailsInput, setShowDetailsInput] = useState(false);
+  const [detailsText, setDetailsText] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const completed = !!completion?.completed;
+
+  useEffect(() => {
+    if (showDetailsInput && inputRef.current) {
+        inputRef.current.focus();
+    }
+  }, [showDetailsInput]);
+
+  // Reset input state when navigating to different dates or when completion changes
+  useEffect(() => {
+    setShowDetailsInput(false);
+    setDetailsText("");
+  }, [currentDate, completion?.id]);
 
   const toggleCompletion = async () => {
     // Trigger animation
@@ -27,49 +41,107 @@ export default function HabitItem({
     setTimeout(() => setIsAnimating(false), 400);
 
     try {
-      await toggleHabitCompletion(habit.id, currentDate, !completed);
+      const wasCompleted = completed;
+      await toggleHabitCompletion(habit.id, currentDate, !wasCompleted);
+      
+      // If we just completed it, show the details input
+      if (!wasCompleted) {
+          setShowDetailsInput(true);
+          setDetailsText("");
+      } else {
+          setShowDetailsInput(false);
+      }
     } catch (e) {
       console.error("Failed to toggle", e);
     }
   };
 
-  return (
-    <div className="flex items-center justify-between p-3 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200">
-      {/* Habit name */}
-      <span
-        className={`text-base transition-all duration-300 ${
-          completed ? "line-through text-gray-400" : "text-gray-900"
-        }`}
-      >
-        {habit.name}
-      </span>
+  const handleSaveDetails = async () => {
+      if (!completion) return; // Should exist if we are saving
+      // Need real date key logic? toggleHabitCompletion handles it, but updateHabitCompletionDetails also handles logic.
+      // We pass currentDate, and the context resolves it.
+      await updateHabitCompletionDetails(habit.id, currentDate, detailsText);
+      setShowDetailsInput(false);
+  };
 
-      {/* Checkbox */}
-      <button
-        onClick={toggleCompletion}
-        className={`p-2 rounded-lg hover:bg-gray-100 transition-all duration-200 ${
-          isAnimating ? "scale-110" : "scale-100"
-        }`}
-        style={{
-          transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease",
-          boxShadow: isAnimating 
-            ? "0 0 20px rgba(34, 197, 94, 0.4), 0 0 10px rgba(34, 197, 94, 0.2)" 
-            : "none",
-        }}
-      >
-        {completed ? (
-          <CheckSquare 
-            className={`w-6 h-6 text-green-500 transition-all duration-300 ${
-              isAnimating ? "rotate-12" : "rotate-0"
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter') {
+          handleSaveDetails();
+      }
+  };
+
+  return (
+    <div className="flex flex-col p-3 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200">
+      <div className="flex items-center justify-between">
+        {/* Habit name */}
+        <span
+            className={`text-base transition-all duration-300 ${
+            completed ? "line-through text-gray-400" : "text-gray-900"
+            }`}
+        >
+            {habit.name}
+        </span>
+
+        {/* Checkbox */}
+        <button
+            onClick={toggleCompletion}
+            className={`p-2 rounded-lg hover:bg-gray-100 transition-all duration-200 ${
+            isAnimating ? "scale-110" : "scale-100"
             }`}
             style={{
-              filter: isAnimating ? "drop-shadow(0 0 8px rgba(34, 197, 94, 0.5))" : "none",
+            transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease",
+            boxShadow: isAnimating 
+                ? "0 0 20px rgba(34, 197, 94, 0.4), 0 0 10px rgba(34, 197, 94, 0.2)" 
+                : "none",
             }}
-          />
-        ) : (
-          <Square className="w-6 h-6 text-gray-400 transition-colors duration-200 hover:text-gray-600" />
-        )}
-      </button>
+        >
+            {completed ? (
+            <CheckSquare 
+                className={`w-6 h-6 text-green-500 transition-all duration-300 ${
+                isAnimating ? "rotate-12" : "rotate-0"
+                }`}
+                style={{
+                filter: isAnimating ? "drop-shadow(0 0 8px rgba(34, 197, 94, 0.5))" : "none",
+                }}
+            />
+            ) : (
+            <Square className="w-6 h-6 text-gray-400 transition-colors duration-200 hover:text-gray-600" />
+            )}
+        </button>
+      </div>
+
+      {/* Details Section */}
+      {completed && (showDetailsInput || completion?.details) && (
+          <div className="mt-1 text-xs pl-0"> 
+             {showDetailsInput ? (
+                 <div className="relative flex items-center animate-in fade-in slide-in-from-top-1 duration-200">
+                     <input
+                        ref={inputRef}
+                        type="text"
+                        value={detailsText}
+                        onChange={(e) => setDetailsText(e.target.value)}
+                        onKeyDown={handleKeyPress}
+                        placeholder="Add details (e.g. 5km run)"
+                        className="w-full px-3 py-2 pr-10 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                     />
+                     <button 
+                        onClick={handleSaveDetails}
+                        className="absolute right-1 p-1.5 bg-blue-500 text-white hover:bg-blue-600 rounded-md transition-colors"
+                     >
+                         <Check className="w-4 h-4" />
+                     </button>
+                 </div>
+             ) : (
+                 completion?.details && (
+                     <div 
+                        className="text-gray-400 animate-in fade-in cursor-default"
+                     >
+                        {completion.details}
+                     </div>
+                 )
+             )}
+          </div>
+      )}
     </div>
   );
 }

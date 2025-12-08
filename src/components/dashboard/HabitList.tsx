@@ -32,36 +32,6 @@ export default function HabitList({
   const weeklyHabits = habits.filter(h => h.frequency === 'weekly' && h.active);
   const monthlyHabits = habits.filter(h => h.frequency === 'monthly' && h.active);
 
-  const renderHabitGroup = (title: string, groupHabits: Habit[]) => {
-      if (groupHabits.length === 0) return null;
-      return (
-          <div className="space-y-2">
-            {/* Optional Header for clarity, maybe small text? User asked for filtering "Daily first then weekly..." 
-                User didn't explicitly ask for headers, but "Separated" implies visual separation. 
-                Let's add a small label if multiple types exist, or just space them out. 
-                "The daily habits can go first, then the weekly and then the monthly." 
-                I'll render them in order. */}
-             
-             {/* Let's just render the list. If separation is needed we can add a divider? 
-                 "Separated" usually invites headers. Let's add small headers. */}
-             <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 mt-4">{title}</h3>
-             
-             <div className="space-y-2">
-                {groupHabits.map(habit => {
-                    const completed = completions[habit.id]?.completed ?? false;
-                    return (
-                        <HabitItem 
-                            key={habit.id}
-                            habit={habit}
-                            completed={completed}
-                            currentDate={currentDate}
-                        />
-                    );
-                })}
-             </div>
-          </div>
-      );
-  };
 
   return (
     <div className="space-y-6 pb-24">
@@ -71,14 +41,17 @@ export default function HabitList({
                 User said "Separated". Let's use headers to be safe and clear. */}
             <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Daily</h3>
             <div className="space-y-2">
-                {dailyHabits.map(habit => (
-                    <HabitItem 
-                        key={habit.id}
-                        habit={habit}
-                        completed={completions[habit.id]?.completed ?? false}
-                        currentDate={currentDate}
-                    />
-                ))}
+                {dailyHabits.map(habit => {
+                    const completion = completions[habit.id];
+                    return (
+                        <HabitItem 
+                            key={habit.id}
+                            habit={habit}
+                            completion={completion}
+                            currentDate={currentDate}
+                        />
+                    );
+                })}
             </div>
           </div>
       )}
@@ -87,15 +60,18 @@ export default function HabitList({
           <div>
              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Weekly</h3>
              <div className="space-y-2">
-                {weeklyHabits.map(habit => (
-                    <HabitItem 
-                        key={habit.id}
-                        habit={habit}
-                        completed={completions[habit.id]?.completed ?? false}
-                        currentDate={currentDate}
-                    />
-                ))}
-             </div>
+                {weeklyHabits.map(habit => {
+                    const completion = completions[habit.id];
+                    return (
+                        <HabitItem 
+                            key={habit.id}
+                            habit={habit}
+                            completion={completion}
+                            currentDate={currentDate}
+                        />
+                    );
+                })}
+            </div>
           </div>
       )}
 
@@ -103,14 +79,17 @@ export default function HabitList({
           <div>
              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Monthly</h3>
              <div className="space-y-2">
-                {monthlyHabits.map(habit => (
-                    <HabitItem 
-                        key={habit.id}
-                        habit={habit}
-                        completed={completions[habit.id]?.completed ?? false}
-                        currentDate={currentDate}
-                    />
-                ))}
+                {monthlyHabits.map(habit => {
+                    const completion = completions[habit.id];
+                    return (
+                        <HabitItem 
+                            key={habit.id}
+                            habit={habit}
+                            completion={completion}
+                            currentDate={currentDate}
+                        />
+                    );
+                })}
              </div>
           </div>
       )}

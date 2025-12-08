@@ -34,6 +34,11 @@ export interface HabitsContextType {
     date: string,
     isCompleted: boolean
   ) => Promise<void>;
+  updateHabitCompletionDetails: (
+    habitId: string,
+    date: string,
+    details: string
+  ) => Promise<void>;
 }
 
 const HabitsContext = createContext<HabitsContextType | null>(null);
@@ -115,7 +120,8 @@ export const HabitsProvider: React.FC<{ children: React.ReactNode }> = ({
                 date: data.date,
                 completed: data.completed,
                 frequency: data.frequency,
-                completedAt: data.completedAt
+                completedAt: data.completedAt,
+                details: data.details
             };
         });
         setCompletions(completionsMap);
@@ -251,6 +257,40 @@ export const HabitsProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  const updateHabitCompletionDetails = async (
+    habitId: string,
+    date: string,
+    details: string
+  ) => {
+    if (!user || !habits) return;
+
+    // Resolve key logic (same as toggle)
+    const habit = habits.find(h => h.id === habitId);
+    if (!habit) return;
+
+    let completionDateKey = date;
+    const targetDate = new Date(date);
+    
+    if (habit.frequency === 'weekly') {
+        const weekStart = startOfWeek(targetDate, { weekStartsOn: 1 });
+        completionDateKey = format(weekStart, "yyyy-MM-dd");
+    } else if (habit.frequency === 'monthly') {
+        const monthStart = startOfMonth(targetDate);
+        completionDateKey = format(monthStart, "yyyy-MM-dd");
+    }
+    
+    const completionId = `${habitId}_${completionDateKey}`;
+    const completionRef = doc(db, "users", user.uid, "completions", completionId);
+
+    try {
+        await updateDoc(completionRef, {
+            details: details
+        });
+    } catch (err) {
+        console.error("Error updating completion details:", err);
+    }
+  };
+
   const totalActiveHabits = (habits ?? []).filter((h) => h.active).length;
 
   return (
@@ -265,6 +305,7 @@ export const HabitsProvider: React.FC<{ children: React.ReactNode }> = ({
         deleteHabit,
         totalActiveHabits,
         toggleHabitCompletion,
+        updateHabitCompletionDetails,
       }}
     >
       {children}
