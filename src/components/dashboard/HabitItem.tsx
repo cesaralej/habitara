@@ -82,7 +82,9 @@ export default function HabitItem({
     : "rgba(34, 197, 94, 0.4)"; // Green
 
   return (
-    <div className="flex flex-col p-3 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200">
+    <div className={`flex flex-col p-3 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 ${
+      isAvoid ? "border-l-4 border-l-red-500" : ""
+    }`}>
       <div className="flex items-center justify-between">
         {/* Habit name */}
         <div className="flex flex-col">
