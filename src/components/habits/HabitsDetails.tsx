@@ -21,6 +21,11 @@ export default function HabitsDetails({
         <h3 className="text-lg font-semibold">{habit.name}</h3>
         <p className="text-sm text-gray-500 capitalize">{habit.frequency}</p>
         <p className="text-sm text-gray-500">
+           Goal: <span className={habit.goal === 'avoid' ? "text-red-500 font-medium" : "text-green-600 font-medium"}>
+               {habit.goal === 'avoid' ? "Break (Avoid)" : "Build (Achieve)"}
+           </span>
+        </p>
+        <p className="text-sm text-gray-500">
           Status: {habit.active ? "Active" : "Archived"}
         </p>
       </div>

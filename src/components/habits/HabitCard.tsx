@@ -13,6 +13,7 @@ export const HabitCard: FC<HabitCardProps> = ({
   onEdit,
 }) => {
   const { streak, totalCompletions, loading } = useHabitStats(habit.id);
+  const isAvoid = habit.goal === "avoid";
 
   return (
     <div 
@@ -26,10 +27,10 @@ export const HabitCard: FC<HabitCardProps> = ({
 
       {/* Right: Stats */}
       <div className="flex items-center gap-3 text-xs flex-shrink-0 p-2">
-        <div className="flex items-center gap-1 text-orange-500">
+        <div className={`flex items-center gap-1 ${isAvoid ? "text-red-500" : "text-orange-500"}`}>
           <Flame className="h-3.5 w-3.5" />
           <span className="font-medium">
-            {loading ? "..." : streak}
+            {loading ? "..." : streak} {isAvoid ? "free" : ""}
           </span>
         </div>
         <div className="flex items-center gap-1 text-blue-500">

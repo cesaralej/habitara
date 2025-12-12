@@ -10,20 +10,14 @@ export const useDateCompletions = (date: string) => {
     if (!habits || loading) return {};
 
     const targetDate = new Date(date);
-    // Calculate keys once
+    // Always use daily key now
     const dailyKey = date;
-    const weeklyKey = format(startOfWeek(targetDate, { weekStartsOn: 1 }), "yyyy-MM-dd");
-    const monthlyKey = format(startOfMonth(targetDate), "yyyy-MM-dd");
 
     const result: Record<string, HabitCompletion> = {};
 
     habits.forEach((habit) => {
-      let key = dailyKey;
-      if (habit.frequency === "weekly") key = weeklyKey;
-      if (habit.frequency === "monthly") key = monthlyKey;
-
       // Construct ID: habitId_dateKey
-      const completionId = `${habit.id}_${key}`;
+      const completionId = `${habit.id}_${dailyKey}`;
       
       // Check if it exists in the global completions map
       if (completions[completionId]) {

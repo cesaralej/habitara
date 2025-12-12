@@ -1,4 +1,4 @@
-import { CheckSquare, Square, Check } from "lucide-react";
+import { CheckSquare, Square, Check, XSquare } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 
 import { useHabits } from "@/contexts/HabitsContext";
@@ -8,12 +8,14 @@ interface HabitItemProps {
   habit: Habit;
   completion?: HabitCompletion;
   currentDate: string; // YYYY-MM-DD
+  periodCompleted?: boolean;
 }
 
 export default function HabitItem({
   habit,
   completion,
   currentDate,
+  periodCompleted = false,
 }: HabitItemProps) {
   const { toggleHabitCompletion, updateHabitCompletionDetails } = useHabits();
   const [isAnimating, setIsAnimating] = useState(false);
@@ -22,6 +24,11 @@ export default function HabitItem({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const completed = !!completion?.completed;
+  const isAvoid = habit.goal === 'avoid';
+
+  // Use effective completion state for visual styling (name text), 
+  // but keep checkbox logic strictly tied to 'completed' (today)
+  const isVisuallyCompleted = completed || periodCompleted;
 
   useEffect(() => {
     if (showDetailsInput && inputRef.current) {
@@ -70,17 +77,31 @@ export default function HabitItem({
       }
   };
 
+  const getShadowColor = () => isAvoid 
+    ? "rgba(220, 38, 38, 0.4)" // Red
+    : "rgba(34, 197, 94, 0.4)"; // Green
+
   return (
     <div className="flex flex-col p-3 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200">
       <div className="flex items-center justify-between">
         {/* Habit name */}
-        <span
-            className={`text-base transition-all duration-300 ${
-            completed ? "line-through text-gray-400" : "text-gray-900"
-            }`}
-        >
-            {habit.name}
-        </span>
+        <div className="flex flex-col">
+            <span
+                className={`text-base transition-all duration-300 ${
+                isVisuallyCompleted 
+                    ? "line-through text-gray-400" 
+                    : "text-gray-900"
+                }`}
+            >
+                {habit.name}
+            </span>
+            {/* Visual indicator for period completion */}
+            {periodCompleted && !completed && !isAvoid && (
+                <span className="text-xs text-green-600 font-medium mt-0.5">
+                    {habit.frequency === 'weekly' ? 'Week complete' : 'Month complete'}
+                </span>
+            )}
+        </div>
 
         {/* Checkbox */}
         <button
@@ -91,21 +112,32 @@ export default function HabitItem({
             style={{
             transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease",
             boxShadow: isAnimating 
-                ? "0 0 20px rgba(34, 197, 94, 0.4), 0 0 10px rgba(34, 197, 94, 0.2)" 
+                ? `0 0 20px ${getShadowColor()}, 0 0 10px ${getShadowColor().replace('0.4', '0.2')}`
                 : "none",
             }}
         >
             {completed ? (
-            <CheckSquare 
-                className={`w-6 h-6 text-green-500 transition-all duration-300 ${
-                isAnimating ? "rotate-12" : "rotate-0"
-                }`}
-                style={{
-                filter: isAnimating ? "drop-shadow(0 0 8px rgba(34, 197, 94, 0.5))" : "none",
-                }}
-            />
+                isAvoid ? (
+                    <XSquare 
+                        className={`w-6 h-6 text-red-500 transition-all duration-300 ${
+                        isAnimating ? "rotate-12" : "rotate-0"
+                        }`}
+                        style={{
+                        filter: isAnimating ? "drop-shadow(0 0 8px rgba(220, 38, 38, 0.5))" : "none",
+                        }}
+                    />
+                ) : (
+                    <CheckSquare 
+                        className={`w-6 h-6 text-green-500 transition-all duration-300 ${
+                        isAnimating ? "rotate-12" : "rotate-0"
+                        }`}
+                        style={{
+                        filter: isAnimating ? "drop-shadow(0 0 8px rgba(34, 197, 94, 0.5))" : "none",
+                        }}
+                    />
+                )
             ) : (
-            <Square className="w-6 h-6 text-gray-400 transition-colors duration-200 hover:text-gray-600" />
+                <Square className={`w-6 h-6 text-gray-400 transition-colors duration-200 ${isAvoid ? "hover:text-red-400" : "hover:text-gray-600"}`} />
             )}
         </button>
       </div>

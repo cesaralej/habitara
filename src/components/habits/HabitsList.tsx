@@ -25,6 +25,11 @@ const HabitList: FC<HabitListProps> = ({ onEdit }) => {
   const activeHabits = habits.filter((h) => h.active);
   const archivedHabits = habits.filter((h) => !h.active);
 
+  // Group active habits by frequency
+  const dailyHabits = activeHabits.filter(h => h.frequency === 'daily');
+  const weeklyHabits = activeHabits.filter(h => h.frequency === 'weekly');
+  const monthlyHabits = activeHabits.filter(h => h.frequency === 'monthly');
+
   const handleArchive = async (habit: Habit) => {
     await updateHabit(habit.id, { active: !habit.active });
   };
@@ -37,20 +42,54 @@ const HabitList: FC<HabitListProps> = ({ onEdit }) => {
 
   return (
     <div className="space-y-8 pb-24">
-      {/* Active Habits */}
-      <div className="space-y-2">
-        {activeHabits.length > 0 ? (
-          activeHabits.map((habit) => (
-            <HabitCard
-              key={habit.id}
-              habit={habit}
-              onEdit={onEdit}
-            />
-          ))
-        ) : (
-          <p className="text-center text-gray-500 py-4">No active habits.</p>
-        )}
-      </div>
+      {/* Active Habits - Grouped by Frequency */}
+      {activeHabits.length > 0 ? (
+        <div className="space-y-6">
+          {/* Daily Habits */}
+          {dailyHabits.length > 0 && (
+            <div className="space-y-2">
+              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Daily</h3>
+              {dailyHabits.map((habit) => (
+                <HabitCard
+                  key={habit.id}
+                  habit={habit}
+                  onEdit={onEdit}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Weekly Habits */}
+          {weeklyHabits.length > 0 && (
+            <div className="space-y-2">
+              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Weekly</h3>
+              {weeklyHabits.map((habit) => (
+                <HabitCard
+                  key={habit.id}
+                  habit={habit}
+                  onEdit={onEdit}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Monthly Habits */}
+          {monthlyHabits.length > 0 && (
+            <div className="space-y-2">
+              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Monthly</h3>
+              {monthlyHabits.map((habit) => (
+                <HabitCard
+                  key={habit.id}
+                  habit={habit}
+                  onEdit={onEdit}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      ) : (
+        <p className="text-center text-gray-500 py-4">No active habits.</p>
+      )}
 
       {/* Archived Habits Section */}
       {archivedHabits.length > 0 && (

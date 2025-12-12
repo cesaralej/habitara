@@ -7,6 +7,7 @@ import HabitItem from "./HabitItem";
 import { useHabits } from "@/contexts/HabitsContext";
 
 import { Habit, HabitCompletion } from "@/types";
+import { startOfWeek } from "date-fns";
 
 interface HabitListProps {
   completions: Record<string, HabitCompletion>;
@@ -33,12 +34,59 @@ export default function HabitList({
   const monthlyHabits = habits.filter(h => h.frequency === 'monthly' && h.active);
 
 
+  // Helper to check period completion
+  const { completions: allCompletions } = useHabits();
+  
+  const isPeriodCompleted = (habit: Habit) => {
+      // If daily, period completion is irrelevant (or same as daily status)
+      if (habit.frequency === 'daily') return false;
+
+      // We need to check if *any* completion exists in the current period
+      // allCompletions keys are habitId_YYYY-MM-DD
+      
+      const targetDate = new Date(currentDate);
+      // Construct date strings for the period
+      // This is slightly expensive if we iterate all completions. 
+      // Better: filter completions by habitId first.
+      
+      // Optimization: filter completions for this habit once? 
+      // Or just iterate. Let's iterate values since we don't have a direct habit index.
+      // Wait, `allCompletions` is a Record using composite keys.
+      // We can iterate the keys? Or Object.values().
+      
+      const habitCompletions = Object.values(allCompletions).filter(c => c.habitId === habit.id);
+      
+      if (habit.frequency === 'weekly') {
+          // Check if any completion falls in the same week as currentDate
+          // Note: using startOfWeek with Monday start
+             // Check if any completion is in the same week
+            // We can compare "YYYY-ww" format? Or getWeek?
+            // Simple: startOfWeek(completionDate) === startOfWeek(currentDate)
+            const currentWeekStart = startOfWeek(targetDate, { weekStartsOn: 1 }).getTime();
+            return habitCompletions.some(c => {
+                 const cDate = new Date(c.date);
+                 const cWeekStart = startOfWeek(cDate, { weekStartsOn: 1 }).getTime();
+                 return cWeekStart === currentWeekStart && c.completed;
+            });
+      }
+      
+      if (habit.frequency === 'monthly') {
+          // Check if same month and year
+          return habitCompletions.some(c => {
+              const cDate = new Date(c.date);
+              return cDate.getMonth() === targetDate.getMonth() && 
+                     cDate.getFullYear() === targetDate.getFullYear() && 
+                     c.completed;
+          });
+      }
+      
+      return false;
+  };
+
   return (
     <div className="space-y-6 pb-24">
       {dailyHabits.length > 0 && (
           <div>
-            {/* Daily usually top, maybe no header needed if it's the main thing? 
-                User said "Separated". Let's use headers to be safe and clear. */}
             <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Daily</h3>
             <div className="space-y-2">
                 {dailyHabits.map(habit => {
@@ -62,12 +110,14 @@ export default function HabitList({
              <div className="space-y-2">
                 {weeklyHabits.map(habit => {
                     const completion = completions[habit.id];
+                    const periodMet = isPeriodCompleted(habit);
                     return (
                         <HabitItem 
                             key={habit.id}
                             habit={habit}
                             completion={completion}
                             currentDate={currentDate}
+                            periodCompleted={periodMet}
                         />
                     );
                 })}
@@ -81,12 +131,14 @@ export default function HabitList({
              <div className="space-y-2">
                 {monthlyHabits.map(habit => {
                     const completion = completions[habit.id];
+                    const periodMet = isPeriodCompleted(habit);
                     return (
                         <HabitItem 
                             key={habit.id}
                             habit={habit}
                             completion={completion}
                             currentDate={currentDate}
+                            periodCompleted={periodMet}
                         />
                     );
                 })}
@@ -94,9 +146,6 @@ export default function HabitList({
           </div>
       )}
       
-      {/* Fallback if all empty but habits exist (e.g. all inactive?) - handled by initial check? 
-          Initial check handles empty habits array. If filtered arrays correspond to active, we are good. */}
-    
     </div>
   );
 }

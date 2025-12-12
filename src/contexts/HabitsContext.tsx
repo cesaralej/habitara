@@ -73,6 +73,7 @@ export const HabitsProvider: React.FC<{ children: React.ReactNode }> = ({
             id: doc.id,
             name: data.name,
             frequency: data.frequency ?? data.type,
+            goal: data.goal ?? "achieve",
             active: data.active ?? true,
             details: data.details,
             createdAt: data.createdAt ?? Date.now(),
@@ -205,32 +206,15 @@ export const HabitsProvider: React.FC<{ children: React.ReactNode }> = ({
   ) => {
     if (!user || !habits) return;
 
-    // Find the habit to check its frequency
+    // Find the habit (validation only)
     const habit = habits.find(h => h.id === habitId);
     if (!habit) {
         console.error("Habit not found");
         return;
     }
 
-    let completionDateKey = date;
-    const targetDate = new Date(date);
-
-    // Logic: 
-    // Daily: separate entry per day (default key is 'YYYY-MM-DD')
-    // Weekly: one entry per week (e.g. 'YYYY-MM-DD' of the Monday of that week)
-    // Monthly: one entry per month (e.g. 'YYYY-MM-01')
-    
-    if (habit.frequency === 'weekly') {
-        // Use the start of the week as the key
-        // Assuming ISO week starts on Monday, but date-fns startOfWeek defaults to Sunday.
-        // Let's stick to startOfWeek(date, { weekStartsOn: 1 }) for Monday start if desired, 
-        // or just standard Sunday. Let's use Monday (1) standard for many.
-        const weekStart = startOfWeek(targetDate, { weekStartsOn: 1 });
-        completionDateKey = format(weekStart, "yyyy-MM-dd");
-    } else if (habit.frequency === 'monthly') {
-        const monthStart = startOfMonth(targetDate);
-        completionDateKey = format(monthStart, "yyyy-MM-dd");
-    }
+    // Always use the specific date provided (daily granularity)
+    const completionDateKey = date;
     
     // Key format: habitId_dateKey
     const completionId = `${habitId}_${completionDateKey}`;
@@ -242,7 +226,7 @@ export const HabitsProvider: React.FC<{ children: React.ReactNode }> = ({
         const completionData: HabitCompletion = {
           id: completionId,
           habitId,
-          date: completionDateKey, // Store the period key
+          date: completionDateKey,
           completed: true,
           frequency: habit.frequency,
           completedAt: Date.now(),
@@ -264,20 +248,8 @@ export const HabitsProvider: React.FC<{ children: React.ReactNode }> = ({
   ) => {
     if (!user || !habits) return;
 
-    // Resolve key logic (same as toggle)
-    const habit = habits.find(h => h.id === habitId);
-    if (!habit) return;
-
-    let completionDateKey = date;
-    const targetDate = new Date(date);
-    
-    if (habit.frequency === 'weekly') {
-        const weekStart = startOfWeek(targetDate, { weekStartsOn: 1 });
-        completionDateKey = format(weekStart, "yyyy-MM-dd");
-    } else if (habit.frequency === 'monthly') {
-        const monthStart = startOfMonth(targetDate);
-        completionDateKey = format(monthStart, "yyyy-MM-dd");
-    }
+    // Always use the specific date provided
+    const completionDateKey = date;
     
     const completionId = `${habitId}_${completionDateKey}`;
     const completionRef = doc(db, "users", user.uid, "completions", completionId);
