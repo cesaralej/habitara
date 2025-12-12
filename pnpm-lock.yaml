@@ -23,6 +23,9 @@ dependencies:
   '@radix-ui/react-navigation-menu':
     specifier: ^1.2.14
     version: 1.2.14(@types/react-dom@19.1.9)(@types/react@19.1.12)(react-dom@19.2.1)(react@19.2.1)
+  '@radix-ui/react-popover':
+    specifier: ^1.1.15
+    version: 1.1.15(@types/react-dom@19.1.9)(@types/react@19.1.12)(react-dom@19.2.1)(react@19.2.1)
   '@radix-ui/react-scroll-area':
     specifier: ^1.2.10
     version: 1.2.10(@types/react-dom@19.1.9)(@types/react@19.1.12)(react-dom@19.2.1)(react@19.2.1)
@@ -59,6 +62,9 @@ dependencies:
   react:
     specifier: ^19.2.1
     version: 19.2.1
+  react-day-picker:
+    specifier: ^9.12.0
+    version: 9.12.0(react@19.2.1)
   react-dom:
     specifier: ^19.2.1
     version: 19.2.1(react@19.2.1)
@@ -98,7 +104,7 @@ devDependencies:
     specifier: ^1.3.7
     version: 1.3.7
   typescript:
-    specifier: ^5.9.2
+    specifier: ^5
     version: 5.9.2
 
 packages:
@@ -107,6 +113,10 @@ packages:
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
     engines: {node: '>=10'}
     dev: true
+
+  /@date-fns/tz@1.4.1:
+    resolution: {integrity: sha512-P5LUNhtbj6YfI3iJjw5EL9eUAG6OitD0W3fWQcpQjDRc/QIsL0tRNuO1PcDvPccWL1fSTXXdE1ds+l95DV/OFA==}
+    dev: false
 
   /@emnapi/runtime@1.7.1:
     resolution: {integrity: sha512-PVtJr5CmLwYAU9PZDMITZoR5iAOShYREoR45EyyLrbntV50mdePTgUn4AmOw90Ifcj+x2kRjdzr1HP3RrNiHGA==}
@@ -1372,6 +1382,40 @@ packages:
       react-dom: 19.2.1(react@19.2.1)
     dev: false
 
+  /@radix-ui/react-popover@1.1.15(@types/react-dom@19.1.9)(@types/react@19.1.12)(react-dom@19.2.1)(react@19.2.1):
+    resolution: {integrity: sha512-kr0X2+6Yy/vJzLYJUPCZEc8SfQcf+1COFoAqauJm74umQhta9M7lNJHP7QQS3vkvcGLQUbWpMzwrXYwrYztHKA==}
+    peerDependencies:
+      '@types/react': '*'
+      '@types/react-dom': '*'
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+    dependencies:
+      '@radix-ui/primitive': 1.1.3
+      '@radix-ui/react-compose-refs': 1.1.2(@types/react@19.1.12)(react@19.2.1)
+      '@radix-ui/react-context': 1.1.2(@types/react@19.1.12)(react@19.2.1)
+      '@radix-ui/react-dismissable-layer': 1.1.11(@types/react-dom@19.1.9)(@types/react@19.1.12)(react-dom@19.2.1)(react@19.2.1)
+      '@radix-ui/react-focus-guards': 1.1.3(@types/react@19.1.12)(react@19.2.1)
+      '@radix-ui/react-focus-scope': 1.1.7(@types/react-dom@19.1.9)(@types/react@19.1.12)(react-dom@19.2.1)(react@19.2.1)
+      '@radix-ui/react-id': 1.1.1(@types/react@19.1.12)(react@19.2.1)
+      '@radix-ui/react-popper': 1.2.8(@types/react-dom@19.1.9)(@types/react@19.1.12)(react-dom@19.2.1)(react@19.2.1)
+      '@radix-ui/react-portal': 1.1.9(@types/react-dom@19.1.9)(@types/react@19.1.12)(react-dom@19.2.1)(react@19.2.1)
+      '@radix-ui/react-presence': 1.1.5(@types/react-dom@19.1.9)(@types/react@19.1.12)(react-dom@19.2.1)(react@19.2.1)
+      '@radix-ui/react-primitive': 2.1.3(@types/react-dom@19.1.9)(@types/react@19.1.12)(react-dom@19.2.1)(react@19.2.1)
+      '@radix-ui/react-slot': 1.2.3(@types/react@19.1.12)(react@19.2.1)
+      '@radix-ui/react-use-controllable-state': 1.2.2(@types/react@19.1.12)(react@19.2.1)
+      '@types/react': 19.1.12
+      '@types/react-dom': 19.1.9(@types/react@19.1.12)
+      aria-hidden: 1.2.6
+      react: 19.2.1
+      react-dom: 19.2.1(react@19.2.1)
+      react-remove-scroll: 2.7.1(@types/react@19.1.12)(react@19.2.1)
+    dev: false
+
   /@radix-ui/react-popper@1.2.8(@types/react-dom@19.1.9)(@types/react@19.1.12)(react-dom@19.2.1)(react@19.2.1):
     resolution: {integrity: sha512-0NJQ4LFFUuWkE7Oxf0htBKS6zLkkjBH+hM1uk7Ng705ReR8m/uelduy1DBo0PyBXPKVnBA6YBlU94MBGXrSBCw==}
     peerDependencies:
@@ -2066,6 +2110,10 @@ packages:
   /csstype@3.1.3:
     resolution: {integrity: sha512-M1uQkMl8rQK/szD0LNhtqxIPLpimGm8sOBwU7lLnCpSbTyY3yeU1Vc7l4KT5zT4s/yOxHH5O7tIuuLOCnLADRw==}
 
+  /date-fns-jalali@4.1.0-0:
+    resolution: {integrity: sha512-hTIP/z+t+qKwBDcmmsnmjWTduxCg+5KfdqWQvb2X/8C9+knYY6epN/pfxdDuyVlSVeFz0sM5eEfwIUQ70U4ckg==}
+    dev: false
+
   /date-fns@4.1.0:
     resolution: {integrity: sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg==}
     dev: false
@@ -2449,6 +2497,18 @@ packages:
       '@protobufjs/utf8': 1.1.0
       '@types/node': 20.19.11
       long: 5.3.2
+    dev: false
+
+  /react-day-picker@9.12.0(react@19.2.1):
+    resolution: {integrity: sha512-t8OvG/Zrciso5CQJu5b1A7yzEmebvST+S3pOVQJWxwjjVngyG/CA2htN/D15dLI4uTEuLLkbZyS4YYt480FAtA==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      react: '>=16.8.0'
+    dependencies:
+      '@date-fns/tz': 1.4.1
+      date-fns: 4.1.0
+      date-fns-jalali: 4.1.0-0
+      react: 19.2.1
     dev: false
 
   /react-dom@19.2.1(react@19.2.1):
