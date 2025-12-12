@@ -5,6 +5,7 @@ export type HabitGoal = "achieve" | "avoid";
 export interface Habit {
   id: string;
   name: string;
+  emoji?: string;
   frequency: HabitFrequency;
   goal: HabitGoal;
   details?: string;
@@ -14,6 +15,7 @@ export interface Habit {
 
 export interface HabitData {
   name: string;
+  emoji?: string;
   frequency: HabitFrequency;
   goal: HabitGoal;
   details?: string;

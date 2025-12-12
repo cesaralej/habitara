@@ -21,9 +21,12 @@ export const HabitCard: FC<HabitCardProps> = ({
         onClick={() => onEdit(habit)}
     >
       {/* Left: Habit name */}
-      <span className="text-base text-gray-900">
-        {habit.name}
-      </span>
+      <div className="flex items-center gap-2">
+           {habit.emoji && <span className="text-lg">{habit.emoji}</span>}
+           <span className="text-base text-gray-900">
+             {habit.name}
+           </span>
+      </div>
 
       {/* Right: Stats */}
       <div className="flex items-center gap-3 text-xs flex-shrink-0 p-2">

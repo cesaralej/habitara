@@ -86,15 +86,18 @@ export default function HabitItem({
       <div className="flex items-center justify-between">
         {/* Habit name */}
         <div className="flex flex-col">
-            <span
-                className={`text-base transition-all duration-300 ${
-                isVisuallyCompleted 
-                    ? "line-through text-gray-400" 
-                    : "text-gray-900"
-                }`}
-            >
-                {habit.name}
-            </span>
+            <div className="flex items-center gap-2">
+                {habit.emoji && <span className="text-lg leading-none">{habit.emoji}</span>}
+                <span
+                    className={`text-base transition-all duration-300 ${
+                    isVisuallyCompleted 
+                        ? "line-through text-gray-400" 
+                        : "text-gray-900"
+                    }`}
+                >
+                    {habit.name}
+                </span>
+            </div>
             {/* Visual indicator for period completion */}
             {periodCompleted && !completed && !isAvoid && (
                 <span className="text-xs text-green-600 font-medium mt-0.5">

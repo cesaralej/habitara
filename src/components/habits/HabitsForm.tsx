@@ -40,6 +40,7 @@ const habitSchema = z.object({
   goal: z.enum(["achieve", "avoid"], {
     message: "You must select a goal type.",
   }),
+  emoji: z.string().max(4).optional(),
   details: z
     .string()
     .max(500, {
@@ -70,6 +71,7 @@ export default function HabitForm({
     resolver: zodResolver(habitSchema),
     defaultValues: {
       name: initialData?.name ?? "",
+      emoji: initialData?.emoji ?? "",
       frequency: initialData?.frequency ?? "daily",
       goal: initialData?.goal ?? "achieve",
       details: initialData?.details ?? "",
@@ -95,24 +97,46 @@ export default function HabitForm({
         onSubmit={form.handleSubmit(handleSubmit)}
         className="space-y-6 p-4 md:p-6"
       >
-        {/* Habit Name Field */}
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Habit Name</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="e.g., Read for 30 minutes"
-                  aria-label="Habit Name"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="flex gap-4">
+          {/* Emoji Field */}
+          <FormField
+            control={form.control}
+            name="emoji"
+            render={({ field }) => (
+              <FormItem className="w-20 flex-shrink-0">
+                <FormLabel>Icon</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="📝"
+                    className="text-center text-lg"
+                    maxLength={2}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Habit Name Field */}
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem className="flex-1">
+                <FormLabel>Habit Name</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="e.g., Read for 30 minutes"
+                    aria-label="Habit Name"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
         {/* Goal Type Field */}
         <FormField

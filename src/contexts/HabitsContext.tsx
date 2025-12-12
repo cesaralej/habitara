@@ -72,6 +72,7 @@ export const HabitsProvider: React.FC<{ children: React.ReactNode }> = ({
           return {
             id: doc.id,
             name: data.name,
+            emoji: data.emoji,
             frequency: data.frequency ?? data.type,
             goal: data.goal ?? "achieve",
             active: data.active ?? true,

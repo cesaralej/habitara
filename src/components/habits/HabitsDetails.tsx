@@ -18,7 +18,10 @@ export default function HabitsDetails({
   return (
     <div className="space-y-6">
       <div className="space-y-1">
-        <h3 className="text-lg font-semibold">{habit.name}</h3>
+        <div className="flex items-center gap-2">
+            {habit.emoji && <span className="text-2xl">{habit.emoji}</span>}
+            <h3 className="text-lg font-semibold">{habit.name}</h3>
+        </div>
         <p className="text-sm text-gray-500 capitalize">{habit.frequency}</p>
         <p className="text-sm text-gray-500">
            Goal: <span className={habit.goal === 'avoid' ? "text-red-500 font-medium" : "text-green-600 font-medium"}>
