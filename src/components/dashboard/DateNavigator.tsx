@@ -1,8 +1,9 @@
-// app/dashboard/DateNavigator.tsx
 "use client";
 
+import * as React from "react";
 import { format, isSameDay } from "date-fns";
-import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronsRight, Calendar as CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface DateNavigatorProps {
   currentDate: Date;
@@ -32,35 +33,68 @@ export default function DateNavigator({
   };
 
   return (
-    <div className="flex items-center justify-between rounded-2xl bg-gray-100 p-2 shadow-sm">
-      {/* Left button */}
-      <button onClick={goPrev} className="p-2 rounded-xl hover:bg-gray-200">
-        <ChevronLeft className="w-5 h-5" />
-      </button>
+    <div className="mb-6">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-2">
+       <div className="grid grid-cols-[auto_1fr_auto] items-center gap-2">
+          {/* Left Arrow */}
+          <button 
+            onClick={goPrev} 
+            className="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition-colors"
+            aria-label="Previous Day"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+          
+          {/* Center: Date Display */}
+          <div className="flex items-center justify-center gap-3">
+             <div 
+                className={cn(
+                    "flex items-center gap-2 px-3 py-1.5 rounded-lg",
+                    isToday ? "text-green-600 bg-green-50" : "text-blue-600 bg-blue-50"
+                )}
+             >
+                <CalendarIcon className="w-4 h-4" />
+                <div className="flex flex-col items-start">
+                  <span className="text-base font-semibold leading-tight">
+                     {format(currentDate, "MMM d")}
+                  </span>
+                  <span className="text-[10px] font-normal text-gray-500 leading-tight">
+                    {format(currentDate, "EEE")}
+                  </span>
+                </div>
+             </div>
 
-      {/* Current Date */}
-      <div className="flex items-center space-x-2">
-        <Calendar className="w-5 h-5 text-gray-600" />
-        <span className="font-medium">
-          {format(currentDate, "EEE, MMM d, yyyy")}
-        </span>
-      </div>
+             {isToday ? (
+                 <button 
+                    className="px-3 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors active:scale-95"
+                    disabled
+                 >
+                     Today
+                 </button>
+             ) : (
+                 <button 
+                    onClick={goToday}
+                    className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors active:scale-95"
+                 >
+                     <span>Today</span>
+                     <ChevronsRight className="w-4 h-4" />
+                 </button>
+             )}
+          </div>
 
-      {/* Right + Today */}
-      <div className="flex items-center space-x-2">
-        <button
-          onClick={goToday}
-          className={`px-2 py-1 text-sm rounded-lg ${
-            isToday
-              ? "bg-green-500 text-white"
-              : "bg-blue-500 text-white hover:bg-blue-600"
-          }`}
-        >
-          {isToday ? "Today" : "Go to Today"}
-        </button>
-        <button onClick={goNext} className="p-2 rounded-xl hover:bg-gray-200">
-          <ChevronRight className="w-5 h-5" />
-        </button>
+          {/* Right Arrow */}
+          <button 
+            onClick={goNext} 
+            className={cn(
+                "p-2 rounded-full hover:bg-gray-100 text-gray-500 transition-colors",
+                isToday && "opacity-30 cursor-not-allowed hover:bg-transparent"
+            )}
+            disabled={isToday}
+            aria-label="Next Day"
+          >
+            <ChevronRight className="w-6 h-6" />
+          </button>
+       </div>
       </div>
     </div>
   );

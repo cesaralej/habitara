@@ -18,7 +18,7 @@ export default function HabitList({
   completions,
   currentDate,
 }: HabitListProps) {
-  const { habits } = useHabits();
+  const { habits, completions: allCompletions } = useHabits();
 
   if (!habits || habits.length === 0) {
     return (
@@ -33,9 +33,7 @@ export default function HabitList({
   const weeklyHabits = habits.filter(h => h.frequency === 'weekly' && h.active);
   const monthlyHabits = habits.filter(h => h.frequency === 'monthly' && h.active);
 
-
   // Helper to check period completion
-  const { completions: allCompletions } = useHabits();
   
   const isPeriodCompleted = (habit: Habit) => {
       // If daily, period completion is irrelevant (or same as daily status)
