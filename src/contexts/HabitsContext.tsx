@@ -14,7 +14,7 @@ import {
 } from "firebase/firestore";
 import { format, startOfWeek, startOfMonth } from "date-fns";
 import { db } from "../lib/firebase";
-import { useFirebaseAuth } from "@/hooks/useFirebaseAuth";
+import { useAuth } from "@/contexts/auth";
 import { Habit, HabitData, HabitCompletion } from "@/types";
 
 export interface HabitsContextType {
@@ -46,7 +46,7 @@ const HabitsContext = createContext<HabitsContextType | null>(null);
 export const HabitsProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { user, isLoading } = useFirebaseAuth();
+  const { user, isLoading } = useAuth();
   const [habits, setHabits] = useState<Habit[] | null>(null);
   const [completions, setCompletions] = useState<Record<string, HabitCompletion>>({});
   const [loading, setLoading] = useState(true);

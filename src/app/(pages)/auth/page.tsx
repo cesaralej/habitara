@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { TriangleAlert } from "lucide-react";
 import { useFirebaseAuth } from "@/hooks/useFirebaseAuth";
+import { useAuth } from "@/contexts/auth";
 import { useRouter } from "next/navigation";
 
 const Alert = ({
@@ -25,8 +26,8 @@ const Alert = ({
 
 export default function AuthPage() {
   const router = useRouter();
-  const { user, isLoading, error, handleGoogleLogin, clearError } =
-    useFirebaseAuth();
+  const { user } = useAuth();
+  const { isLoading, error, handleGoogleLogin, clearError } = useFirebaseAuth();
 
   useEffect(() => {
     if (user) {
