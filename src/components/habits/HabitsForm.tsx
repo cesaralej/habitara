@@ -49,6 +49,7 @@ const habitSchema = z.object({
     .trim()
     .optional(),
   active: z.boolean(),
+  askDetails: z.boolean(),
 });
 
 export type HabitFormValues = z.infer<typeof habitSchema>;
@@ -76,6 +77,7 @@ export default function HabitForm({
       goal: initialData?.goal ?? "achieve",
       details: initialData?.details ?? "",
       active: initialData?.active ?? true,
+      askDetails: initialData?.askDetails ?? (isEdit ? true : false),
     },
   });
 
@@ -303,6 +305,28 @@ export default function HabitForm({
                 />
               </FormControl>
               <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Ask for details Switch */}
+        <FormField
+          control={form.control}
+          name="askDetails"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+              <div className="space-y-0.5">
+                <FormLabel className="text-base">Ask for details?</FormLabel>
+                <FormDescription>
+                  If enabled, you'll be prompted to add details when completing this habit.
+                </FormDescription>
+              </div>
+              <FormControl>
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
             </FormItem>
           )}
         />

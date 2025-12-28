@@ -51,8 +51,11 @@ export default function HabitItem({
       const wasCompleted = completed;
       await toggleHabitCompletion(habit.id, currentDate, !wasCompleted);
       
-      // If we just completed it, show the details input
-      if (!wasCompleted) {
+      // If we just completed it, show the details input ONLY if the habit asks for it
+      // Default to true if undefined (backward compatibility)
+      const shouldAskDetails = habit.askDetails !== false;
+      
+      if (!wasCompleted && shouldAskDetails) {
           setShowDetailsInput(true);
           setDetailsText("");
       } else {
@@ -82,9 +85,7 @@ export default function HabitItem({
     : "rgba(34, 197, 94, 0.4)"; // Green
 
   return (
-    <div className={`flex flex-col p-3 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 ${
-      isAvoid ? "border-l-4 border-l-red-500" : ""
-    }`}>
+    <div className="flex flex-col p-3 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200">
       <div className="flex items-center justify-between">
         {/* Habit name */}
         <div className="flex flex-col">
@@ -142,7 +143,7 @@ export default function HabitItem({
                     />
                 )
             ) : (
-                <Square className={`w-6 h-6 text-gray-400 transition-colors duration-200 ${isAvoid ? "hover:text-red-400" : "hover:text-gray-600"}`} />
+                <Square className={`w-6 h-6 transition-colors duration-200 ${isAvoid ? "text-red-400 hover:text-red-500" : "text-gray-400 hover:text-gray-600"}`} />
             )}
         </button>
       </div>

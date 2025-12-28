@@ -77,6 +77,7 @@ export const HabitsProvider: React.FC<{ children: React.ReactNode }> = ({
             goal: data.goal ?? "achieve",
             active: data.active ?? true,
             details: data.details,
+            askDetails: data.askDetails,
             createdAt: data.createdAt ?? Date.now(),
           };
         });

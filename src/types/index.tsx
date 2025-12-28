@@ -10,6 +10,7 @@ export interface Habit {
   goal: HabitGoal;
   details?: string;
   active: boolean;
+  askDetails?: boolean;
   createdAt: number;
 }
 
@@ -19,6 +20,7 @@ export interface HabitData {
   frequency: HabitFrequency;
   goal: HabitGoal;
   details?: string;
+  askDetails?: boolean;
   active?: boolean;
 }
 
