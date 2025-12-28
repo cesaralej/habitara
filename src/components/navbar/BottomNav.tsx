@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, CheckCircle2, Settings, User } from "lucide-react";
+import { LayoutDashboard, CheckCircle2, Settings, User, CalendarDays } from "lucide-react";
 
 const links = [
   {
@@ -14,6 +14,11 @@ const links = [
     label: "Habits",
     path: "/habits",
     icon: CheckCircle2,
+  },
+  {
+    label: "History",
+    path: "/history",
+    icon: CalendarDays,
   },
   {
     label: "Account",

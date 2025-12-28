@@ -25,6 +25,10 @@ const links = [
     label: " Habits",
     path: "/habits",
   },
+  {
+    label: "History",
+    path: "/history",
+  },
 ];
 
 export default function NavbarLinks() {
