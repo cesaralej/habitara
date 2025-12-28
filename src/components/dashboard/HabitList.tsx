@@ -21,7 +21,16 @@ export default function HabitList({
   completions,
   currentDate,
 }: HabitListProps) {
-  const { habits, completions: allCompletions } = useHabits();
+  const { habits, completions: allCompletions, loading } = useHabits();
+  
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center p-8 mt-4">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        <p className="mt-4 text-sm text-gray-400">Loading your habits...</p>
+      </div>
+    );
+  }
 
   if (!habits || habits.length === 0) {
     return (

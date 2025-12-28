@@ -60,6 +60,19 @@ export const HabitsProvider: React.FC<{ children: React.ReactNode }> = ({
       return;
     }
 
+    // Reset loading state and local trackers when fetching begins for a user
+    setLoading(true);
+
+    // Track initial load state
+    let habitsLoaded = false;
+    let completionsLoaded = false;
+
+    const checkLoading = () => {
+      if (habitsLoaded && completionsLoaded) {
+        setLoading(false);
+      }
+    };
+
     // 1. Fetch Habits
     const habitsCollectionRef = collection(db, "users", user.uid, "habits");
     const qHabits = query(habitsCollectionRef);
@@ -88,10 +101,14 @@ export const HabitsProvider: React.FC<{ children: React.ReactNode }> = ({
         );
 
         setHabits(sortedHabits);
+        habitsLoaded = true;
+        checkLoading();
       },
       (err) => {
         console.error("Error fetching habits:", err);
         setError(err);
+        habitsLoaded = true; // Still mark as loaded to avoid stuck spinner
+        checkLoading();
       }
     );
 
@@ -108,14 +125,6 @@ export const HabitsProvider: React.FC<{ children: React.ReactNode }> = ({
         const completionsMap: Record<string, HabitCompletion> = {};
         snapshot.docs.forEach((doc) => {
             // ID format: habitId_date (usually)
-            // But we might have just random IDs if we moved to that?
-            // Wait, toggleHabitCompletion uses `${habitId}_${date}`.
-            // Let's store them in a Map by ID for easy lookup, 
-            // OR grouped by HabitID for stats calculation.
-            // Storing flat map is good context state, but stats need grouping.
-            // Let's store flat map for date lookups, but we might want an array for stats.
-            // Actually, for stats we need an array.
-            
             const data = doc.data();
             completionsMap[doc.id] = {
                 id: doc.id,
@@ -128,12 +137,14 @@ export const HabitsProvider: React.FC<{ children: React.ReactNode }> = ({
             };
         });
         setCompletions(completionsMap);
-        setLoading(false); // Only done loading when both are potentially ready
+        completionsLoaded = true;
+        checkLoading();
       },
       (err) => {
          console.error("Error fetching completions:", err);
          setError(err);
-         setLoading(false);
+         completionsLoaded = true; // Still mark as loaded
+         checkLoading();
       }
     );
 

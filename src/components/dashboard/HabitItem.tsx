@@ -160,7 +160,7 @@ export default function HabitItem({
                         onChange={(e) => setDetailsText(e.target.value)}
                         onKeyDown={handleKeyPress}
                         placeholder="Add details (e.g. 5km run)"
-                        className="w-full px-3 py-2 pr-10 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                        className="w-full px-3 py-2 pr-10 text-base md:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                      />
                      <button 
                         onClick={handleSaveDetails}
