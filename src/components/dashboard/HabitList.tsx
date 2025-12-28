@@ -9,6 +9,9 @@ import { useHabits } from "@/contexts/HabitsContext";
 import { Habit, HabitCompletion } from "@/types";
 import { startOfWeek } from "date-fns";
 
+import Link from "next/link";
+import { PlusCircle } from "lucide-react";
+
 interface HabitListProps {
   completions: Record<string, HabitCompletion>;
   currentDate: string; // YYYY-MM-DD
@@ -22,8 +25,20 @@ export default function HabitList({
 
   if (!habits || habits.length === 0) {
     return (
-      <div className="text-center text-gray-500 p-6">
-        No habits yet. Add one to get started!
+      <div className="flex flex-col items-center justify-center p-8 bg-white rounded-2xl border border-dashed border-gray-300 shadow-sm animate-in fade-in zoom-in duration-300 mt-4">
+        <div className="p-3 bg-blue-50 rounded-full mb-4">
+          <PlusCircle className="w-8 h-8 text-blue-500" />
+        </div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">No habits yet</h3>
+        <p className="text-sm text-gray-500 text-center max-w-[250px] mb-6">
+          Start your journey by defining the habits you want to build or avoid.
+        </p>
+        <Link 
+          href="/habits" 
+          className="inline-flex items-center justify-center px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors shadow-sm"
+        >
+          Add My First Habit
+        </Link>
       </div>
     );
   }

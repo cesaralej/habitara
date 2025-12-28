@@ -5,6 +5,7 @@ import { useHabits } from "@/contexts/HabitsContext";
 import { Habit } from "@/types";
 import { HabitCard } from "./HabitCard";
 import { Button } from "@/components/ui/button";
+import { PlusCircle } from "lucide-react";
 
 interface HabitListProps {
   onEdit: (habit: Habit) => void;
@@ -16,9 +17,15 @@ const HabitList: FC<HabitListProps> = ({ onEdit }) => {
 
   if (!habits || habits.length === 0) {
     return (
-      <p className="text-gray-500 text-center py-8">
-        No habits found. Add one using the "+" button.
-      </p>
+      <div className="flex flex-col items-center justify-center p-12 bg-white rounded-2xl border border-dashed border-gray-300 shadow-sm animate-in fade-in zoom-in duration-300">
+        <div className="p-4 bg-zinc-50 rounded-full mb-4">
+          <PlusCircle className="w-10 h-10 text-zinc-400" />
+        </div>
+        <h3 className="text-xl font-bold text-gray-900 mb-2">Build your first habit</h3>
+        <p className="text-gray-500 text-center max-w-sm">
+          You don't have any habits yet. Use the <strong className="text-blue-600">Add Habit</strong> button above (or the "+" button on mobile) to get started on your journey.
+        </p>
+      </div>
     );
   }
 
