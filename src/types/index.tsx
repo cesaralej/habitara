@@ -11,6 +11,7 @@ export interface Habit {
   details?: string;
   active: boolean;
   askDetails?: boolean;
+  order?: number;
   createdAt: number;
 }
 
@@ -21,6 +22,7 @@ export interface HabitData {
   goal: HabitGoal;
   details?: string;
   askDetails?: boolean;
+  order?: number;
   active?: boolean;
 }
 

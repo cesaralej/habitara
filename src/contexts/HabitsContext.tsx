@@ -10,6 +10,7 @@ import {
   updateDoc,
   setDoc,
   doc,
+  writeBatch,
   FirestoreError,
 } from "firebase/firestore";
 import { format, startOfWeek, startOfMonth } from "date-fns";
@@ -39,6 +40,7 @@ export interface HabitsContextType {
     date: string,
     details: string
   ) => Promise<void>;
+  reorderHabits: (habits: Habit[]) => Promise<void>;
 }
 
 const HabitsContext = createContext<HabitsContextType | null>(null);
@@ -91,13 +93,19 @@ export const HabitsProvider: React.FC<{ children: React.ReactNode }> = ({
             active: data.active ?? true,
             details: data.details,
             askDetails: data.askDetails,
+            order: data.order ?? 0,
             createdAt: data.createdAt ?? Date.now(),
           };
         });
 
         // Optional: sort by creation date
         const sortedHabits = habitsData.sort(
-          (a, b) => a.createdAt - b.createdAt
+          (a, b) => {
+            if (a.order !== b.order) {
+              return (a.order ?? 0) - (b.order ?? 0);
+            }
+            return a.createdAt - b.createdAt;
+          }
         );
 
         setHabits(sortedHabits);
@@ -165,9 +173,13 @@ export const HabitsProvider: React.FC<{ children: React.ReactNode }> = ({
       return;
     }
 
+    // Calculate order: max(order) + 1
+    const maxOrder = habits?.reduce((max, h) => Math.max(max, h.order ?? 0), 0) ?? 0;
+
     const newHabit = {
       ...habitData,
       active: habitData.active ?? true,
+      order: maxOrder + 1,
       createdAt: Date.now(),
     };
 
@@ -276,6 +288,25 @@ export const HabitsProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  const reorderHabits = async (updatedHabits: Habit[]) => {
+    if (!user) return;
+    
+    // Optimistic update
+    setHabits(updatedHabits);
+
+    try {
+        const batch =  writeBatch(db);
+        updatedHabits.forEach((habit) => {
+            const habitRef = doc(db, "users", user.uid, "habits", habit.id);
+            batch.update(habitRef, { order: habit.order });
+        });
+        await batch.commit();
+    } catch (err) {
+        console.error("Error reordering habits:", err);
+        // Revert on error? For now, we rely on the next snapshot update to fix it if it failed
+    }
+  };
+
   const totalActiveHabits = (habits ?? []).filter((h) => h.active).length;
 
   return (
@@ -291,6 +322,7 @@ export const HabitsProvider: React.FC<{ children: React.ReactNode }> = ({
         totalActiveHabits,
         toggleHabitCompletion,
         updateHabitCompletionDetails,
+        reorderHabits,
       }}
     >
       {children}
