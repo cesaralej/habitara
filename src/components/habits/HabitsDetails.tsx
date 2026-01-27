@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Habit } from "@/types";
+import HabitHistoryGraph from "./HabitHistoryGraph";
 
 interface HabitsDetailsProps {
   habit: Habit;
@@ -39,6 +40,8 @@ export default function HabitsDetails({
           {habit.details || "No details provided."}
         </p>
       </div>
+
+      <HabitHistoryGraph habitId={habit.id} goal={habit.goal} />
 
       <div className="flex flex-col gap-3 pt-4">
         <Button onClick={onEdit} className="w-full">
